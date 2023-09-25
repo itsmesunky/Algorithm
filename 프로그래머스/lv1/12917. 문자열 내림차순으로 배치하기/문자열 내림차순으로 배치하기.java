@@ -4,7 +4,7 @@ import java.util.List;
 
 class Solution {
     public String solution(String s) {
-       StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 		
 		// 소문자 List
 		List<Character> lowerCaseList = new ArrayList<Character>();
