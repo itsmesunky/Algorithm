@@ -1,18 +1,9 @@
 function solution(strArr) {
-    let answer = 0;
+    let countByStrLength = {};
     
-    for(let i = 0; i < strArr.length; i++) {
-        let strLength = strArr[i].length;
-        let count = 1;
-        
-        for(let j = i + 1; j < strArr.length; j++) {
-            if(strArr[j].length === strLength) {
-                count++;
-            }
-        }
-        
-        answer = Math.max(answer, count);
+    for(const str of strArr) {
+        countByStrLength[str.length] = (countByStrLength[str.length] ?? 0) + 1;
     }
     
-    return answer;
+    return Math.max(...Object.values(countByStrLength))
 }
