@@ -1,17 +1,20 @@
 const solution = (numbers) => {
-    let strNumbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-    
-    let answer = "";
-    let str = "";
-    
-    for(let i = 0; i < numbers.length; i++) {
-        str += numbers[i];
-        
-        if(strNumbers.includes(str)) {
-            answer += strNumbers.indexOf(str);
-            str = "";
-        }
+    const map = {
+        zero: 0,
+        one: 1,
+        two: 2,
+        three: 3,
+        four: 4,
+        five: 5,
+        six: 6,
+        seven: 7,
+        eight: 8,
+        nine: 9
     }
     
-    return +answer;
+    for(const key in map) {
+        numbers = numbers.replaceAll(key, map[key]);
+    }
+    
+    return +numbers;
 }
