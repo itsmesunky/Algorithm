@@ -1,14 +1,14 @@
-const factorial = (n) => {
-    let result = 1n;
-    for (let i = 2n; i <= n; i++) {
-        result *= i;
+const factorial = (number) => {
+    let i = 1n;
+    let factorialNumber = 1n;
+    
+    while(i <= number) {
+        factorialNumber *= i++;
     }
-    return result;
-};
+    
+    return factorialNumber;
+}
 
 const solution = (balls, share) => {
-    const b = BigInt(balls);
-    const s = BigInt(share);
-    
-    return factorial(b) / (factorial(s) * factorial(b - s));
-};
+    return factorial(balls) / (factorial(balls-share) * factorial(share));
+}   
