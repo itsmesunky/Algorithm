@@ -1,38 +1,26 @@
 const solution = (keyinput, board) => {
-    const answer = [0, 0];
+    const move = {
+        up: [0, 1],
+        down: [0, -1],
+        left: [-1, 0],
+        right: [1, 0]
+    };
     
-    const maxUpValue = (board[1] - 1) / 2;
-    const minDownValue = maxUpValue * -1;
+    const [maxX, maxY] = [(board[0] - 1) / 2, ((board[1] - 1) / 2)];
     
-    const maxRightValue = (board[0] - 1) / 2;
-    const minLeftValue = maxRightValue * -1;
+    let curX = 0;
+    let curY = 0;
     
-    for(const direction of keyinput) {
-        const [curX, curY] = answer;
+    for(const key of keyinput) {
+        const [mx, my] = move[key];
         
-        switch(direction) {
-            case "up":
-                if(curY < maxUpValue) {
-                    answer[1] += 1;
-                }
-                break;
-            case "down":
-                if(minDownValue < curY) {
-                    answer[1] -= 1;
-                }
-                break;
-            case "left":
-                if(minLeftValue < curX) {
-                    answer[0] -= 1;
-                }
-                break;
-            case "right":
-                if(curX < maxRightValue) {
-                    answer[0] += 1;
-                }
-                break;
+        const [movedX, movedY] = [curX + mx, curY + my];
+        
+        if(Math.abs(movedX) <= maxX && Math.abs(movedY) <= maxY) {
+            curX = movedX;
+            curY = movedY;
         }
     }
     
-    return answer;
+    return [curX, curY];
 }
