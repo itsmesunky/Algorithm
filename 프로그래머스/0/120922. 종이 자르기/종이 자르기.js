@@ -1,3 +1,3 @@
 const solution = (M, N) => {
-    return (M - 1) + (M * N) - (M * 1);
+    return (M - 1) + M * (N - 1);
 }
