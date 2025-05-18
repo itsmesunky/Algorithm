@@ -1,11 +1,14 @@
 const solution = (polynomial) => {
-    const x = polynomial.split("+")
-                        .filter(v => v.includes('x'))
-                        .replaceAll('x', '1x')
-                        .reduce((acc, cur) => acc += parseInt(cur), 0);
+    let xValue = 0;
+    let numValue = 0;
     
-    const number = polynomial.split("+")
-                             .filter(v => !v.includes('x'))
-                             .reduce((acc, cur) => acc += cur ,0);
-    return x + "x" + number;
+    polynomial.split(" + ").forEach(v => {
+      if(v.includes('x')) {
+          xValue += parseInt(v.replace("x", "") || "1");
+      } else {
+          numValue += parseInt(v);
+      }
+    });
+    
+    return (xValue ? (xValue === 1 ? "x" : xValue + "x") + (numValue ? " + " : "") : "") + (numValue ? numValue : "");
 }
