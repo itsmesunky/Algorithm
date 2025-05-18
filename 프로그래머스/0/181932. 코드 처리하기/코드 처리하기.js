@@ -1,26 +1,18 @@
 const solution = (code) => {
-    let ret = "";
     let mode = false;
     
-    for(let i = 0; i < code.length; i++) {
-        switch(code[i]) {
-            case "1":
-                mode = !mode;
-                break;
-            default:
-                if(mode) {
-                    if(i % 2 !== 0) {
-                        ret += code[i];
-                    }
-                } else {
-                    if(i % 2 === 0) {
-                        ret += code[i];
-                    }
-                }
-                break;
+    return [...code].reduce((acc, cur, i) => {
+        if(cur === "1") {
+            mode = !mode;
+            return acc += "";
         }
-    }
-    
-    return ret.length === 0 ? "EMPTY" : ret;
+        
+        if(mode) {
+            return i % 2 !== 0 ? acc += cur : acc += "";
+        } else {
+            return i % 2 === 0 ? acc += cur : acc += "";
+        }
+        
+    }, "") || "EMPTY";
     
 }
