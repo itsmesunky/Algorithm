@@ -1,5 +1,5 @@
 const solution = (common) => {
-    const [a, b, c] = [common.at(-3), common.at(-2), common.at(-1)];
+    const [a, b, c] = common.slice(-3)
     
     const diff1 = b - a;
     const diff2 = c - b;
