@@ -2,16 +2,13 @@ const solution = (quiz) => {
     return quiz.map(v => {
         const array = v.split(" ");
         
-        const left = +array[0];
-        const operator = array[1];
-        const right = +array[2];
-        const result = +array[4];
+        const [left, operator, right, _, result] = array;
         
         switch(operator) {
             case "+":
-                return left + right === result ? "O" : "X";
+                return +left + +right === +result ? "O" : "X";
             case "-":
-                return left - right === result ? "O" : "X";
+                return +left - +right === +result ? "O" : "X";
         }
     })
 }
