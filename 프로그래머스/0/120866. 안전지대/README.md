@@ -1,10 +1,10 @@
 # [level 0] 안전지대 - 120866 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/120866) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/120866?gad_source=1&gad_campaignid=22499034228&gbraid=0AAAAAC_c4nC-WbRIfdFMNhNfYtjHmRIVQ&gclid=CjwKCAjwravBBhBjEiwAIr30VAHLYqvB3FNgpoVCCbop70N7SsrRLxFDi7lzP0WL6-vpEk7IbyYEGBoC1z8QAvD_BwE) 
 
 ### 성능 요약
 
-메모리: 33.5 MB, 시간: 0.30 ms
+메모리: 33.5 MB, 시간: 0.36 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 05월 19일 16:07:34
+2025년 05월 19일 17:23:39
 
 ### 문제 설명
 
