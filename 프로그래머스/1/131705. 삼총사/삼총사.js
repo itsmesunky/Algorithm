@@ -10,11 +10,7 @@ const solution = (number) => {
         }
     }
     
-    arrays.forEach(item => {
-        const sum = item.reduce((acc, cur) => acc += cur, 0);
-        
-        if(sum === 0) result++;
-    });
+    arrays.forEach(item => item.reduce((acc, cur) => acc += cur, 0) || result++)
     
     return result;
 }
