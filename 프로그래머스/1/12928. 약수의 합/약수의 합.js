@@ -1,3 +1,17 @@
 const solution = (n) => {
-    return Array.from({length: n}, (_, i) => i + 1).reduce((acc, cur) => n % cur ? acc += 0 : acc  += cur, 0)
+    let result = 0;
+    
+    for(let i = 1; i <= Math.sqrt(n); i++) {
+        if(n % i === 0) {
+            result += i;
+            
+            const paired = n / i;
+            
+            if(paired !== i) {
+                result += paired;
+            }
+        }
+    }
+    
+    return result;
 }
