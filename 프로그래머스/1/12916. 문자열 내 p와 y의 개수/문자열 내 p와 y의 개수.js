@@ -1,11 +1,3 @@
 const solution = (s) => {
-    let p = 0;
-    let y = 0;
-    
-    for(const char of s) {
-        if(/p|P/.test(char)) p++;
-        if(/y|Y/.test(char)) y++;        
-    }
-    
-    return p === y ? true : false;
+    return s.match(/p|P/g)?.length === s.match(/y|Y/g)?.length ? true : false;
 }
