@@ -1,15 +1,15 @@
 const solution = (s) => {
-    let str = "";
-    const result = [];
+    const map = new Map();
     
-    [...s].forEach((char, i) => {
-        if(str.includes(char)) {
-            result.push(i - str.lastIndexOf(char));
+    const result = [...s].map((char, i) => {
+        if(map.has(char)) {
+            const diff = i - map.get(char);
+            map.set(char, i);
+            return diff;
         } else {
-            result.push(-1);
+            map.set(char, i);
+            return -1;
         }
-        
-        str += char;
     })
     
     return result;
