@@ -1,21 +1,14 @@
 const solution = (k, score) => {
-    const temple = [];
+    const hof = [];
     const result = [];
-    let day = 0;
     
-    while(day < score.length) {
-        if(day < k) {
-            temple.push(score[day]);
-        } else {
-            let min = Math.min(...temple);
-            
-            if(score[day] > min) {
-                temple[temple.indexOf(min)] = score[day];
-            }
-        }
+    for(let i = 0; i < score.length; i++) {
+        hof.push(score[i]);
+        hof.sort((a, b) => b - a);
         
-        result.push(Math.min(...temple));
-        day++;
+        if(hof.length > k) hof.pop();
+        
+        result.push(hof.at(-1));
     }
     
     return result;
