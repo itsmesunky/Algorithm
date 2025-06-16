@@ -1,35 +1,30 @@
 const solution = (dartResult) => {
-    const split = dartResult.match(/\d+[SDT][*#]?/g);
-    const scores = [];
+    const bonusMap = {
+        "S": 1,
+        "D": 2,
+        "T": 3
+    };
     
-    split.forEach((str, i) => {
-        const s = str.match(/\d/g).join('');
-        const b = str.match(/[SDT]/g)[0];
-        const o = str.match(/[*#]/g)?.[0] ?? '';
+    const scores = [];
+    const rounds = dartResult.match(/\d+[SDT][*#]?/g); // ['1D', '2S#', '10S']
+    
+    rounds.forEach((round, i) => {
+        let total = 0;
+        const [_, score, bonus, option] = round.match(/(\d+)([SDT])([*#]?)/);
+        total += Math.pow(+score, bonusMap[bonus]);
         
-        switch(b) {
-            case 'S':
-                scores[i] = Math.pow(+s, 1);
-                break;
-            case 'D':
-                scores[i] = Math.pow(+s, 2);
-                break;
-            case 'T':
-                scores[i] = Math.pow(+s, 3);
-                break;
-                
-        }
-        
-        if(o === '*') {
-            scores[i] = scores[i] * 2;
+        if(option === '*') {
+            total *= 2;
             if(i !== 0) {
-                scores[i-1] = scores[i-1] * 2;
+                scores[i - 1] *= 2;
             }
-        } else if(o === '#') {
-            scores[i] = scores[i] * -1;
+        } else if(option === '#') {
+            total *= -1;
         }
+        
+        scores.push(total);
     })
     
-
-    return scores.reduce((cur, acc) => cur += acc, 0)
+    return scores.reduce((acc, cur) => acc += cur, 0);
+    
 }
