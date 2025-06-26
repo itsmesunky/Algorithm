@@ -1,27 +1,17 @@
 const solution = (s) => {
-    let result = x = pos = xCount = notXCount = curIndex = 0;
-    let charArr = [...s];
+    let result = 0;
+    let same = diff = 0;
+    let x = s[0];
     
-    while(pos < s.length) {
-        x = charArr[0];
-        let nextChar = charArr[curIndex];
-        
-        if(x === nextChar) {
-            xCount++;
-        } else {
-            notXCount++;
-        }
-        
-        pos++;
-        curIndex++;
-        
-        if(xCount === notXCount) {
-            charArr.splice(0, curIndex);
-            curIndex = xCount = notXCount = 0;
+    [...s].forEach((char, i) => {
+        x === s[i] ? same++ : diff++;
+       
+        if(same === diff) {
+            x = s[i+1];
+            same = diff = 0;
             result++;
         }
-    }
+    });
     
-    
-    return (charArr.length > 0 ? 1 : 0) + result;
+    return (same !== diff ? 1 : 0) + result;
 }
