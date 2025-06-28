@@ -1,21 +1,17 @@
-const solution = (ingredient) => {
-    const arr = [];
-    let answer = 0;
-    let pos = 0;
-    
-    for(let i = 0; i < ingredient.length; i++) {
-        arr.push(ingredient[i]);
-        
-        if(arr.length > 3) {
-            if(arr.slice(pos - 3).join('') === "1231") {
-                answer++;
-                arr.splice(pos - 3);
-                pos -= 4;
-            }
+function solution(ingredient) {
+    let stk = [];
+    let count = 0;
+    for (let i = 0; i < ingredient.length; i++) {
+        stk.push(ingredient[i]);
+        if (
+            stk[stk.length-1] === 1 &&
+            stk[stk.length-2] === 3 &&
+            stk[stk.length-3] === 2 &&
+            stk[stk.length-4] === 1
+        ) {
+            count++;
+            stk.splice(-4);
         }
-        
-        pos++;
     }
-    
-    return answer;
+    return count;
 }
