@@ -1,14 +1,10 @@
 // 10분뒤 시간을 반환하는 함수
 const getTime = (strHour, strMin) => {
-    let hour = Number.parseInt(strHour);
-    let minute = Number.parseInt(strMin);
-    
-    if(minute >= 50) hour++;
-    
-    hour = (hour % 24).toString().padStart(2, '0');
-    minute = ((minute + 10) % 60).toString().padStart(2, '0');
-    
-    return Number.parseInt(hour + minute);
+  const total = (parseInt(strHour) * 60) + (parseInt(strMin) + 10);
+  const hour = String(Math.floor(total / 60) % 24).padStart(2, '0');
+  const minute = String(total % 60).padStart(2, '0');
+  
+  return parseInt(hour + minute);
 }
 
 const solution = (schedules, timelogs, startday) => {
