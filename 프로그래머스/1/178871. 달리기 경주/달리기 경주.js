@@ -1,18 +1,16 @@
 const solution = (players, callings) => {
-    const map = new Map(players.map((name, i) => [i + 1, name]));
-    const obj = Object.fromEntries(players.map((name, i) => [name, i + 1]));
-    
+    // 이름 : 등수 - 1
+    const obj = Object.fromEntries(players.map((name, i) => [name, i]));
     
     for(const name of callings) {
-        const front = map.get(obj[name] - 1);
+        const idx = obj[name];
+        const prev = players[idx - 1];
         
-        map.set(obj[name] - 1, name);
-        map.set(obj[name], front);
+        [players[idx - 1], players[idx]] = [players[idx], players[idx - 1]];
         
-        obj[front] = obj[front] + 1;
-        obj[name] = obj[name] - 1;
+        obj[name]--;
+        obj[prev]++;
     }
     
-    
-    return [...map.values()];
+    return players;
 }
