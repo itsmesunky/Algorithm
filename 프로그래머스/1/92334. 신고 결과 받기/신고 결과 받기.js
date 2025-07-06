@@ -21,7 +21,7 @@ const solution = (id_list, report, k) => {
     }
     
     for(const name in users) {
-        const count = [...users[name].reports].filter(v => [...blacklist].indexOf(v) > -1).length;
+        const count = [...users[name].reports].filter(v => blacklist.has(v)).length;
         
         answer.push(count);
     }
