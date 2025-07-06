@@ -1,7 +1,4 @@
 const solution = (park, routes) => {
-    // park 배열의 길이 * park[0] 길이의 2차원 배열 생성
-    const arr = Array.from({length: park.length}, () => Array(park[0].length).fill(1));
-    
     // 각 문자에 방향 저장
     const dir = {
         N: [-1, 0], // 위
@@ -29,13 +26,12 @@ const solution = (park, routes) => {
         
         // 이동할 위치
         let [my, mx] = [posY, posX];
-        
         while(count < n) {
             my += dir[op][0];
             mx += dir[op][1];
             
             // 좌표를 벗어났거나 장애물을 만났을 때 반복문 종료
-            if(!arr[my] || !arr[my][mx] || park[my][mx] === 'X') {
+            if(!park[my] || !park[my][mx] || park[my][mx] === 'X') {
                 break;
             }
             
