@@ -20,16 +20,14 @@ const solution = (bandage, health, attacks) => {
             if(curHealth <= 0) return -1;
         } else { // 몬스터 공격 시간이 아닌 경우
             count++;
-            // 현재 체력이 최대 체력보다 작은 경우
-            if(curHealth < health) {
-                curHealth = Math.min(curHealth + bandage[1], health);
-                // 기술 연속 시전 성공이면 추가 회복량 증가
-                if(count === bandage[0]) {
-                    curHealth = Math.min(curHealth + bandage[2], health);
-                }
-            }
             
-            if(count === bandage[0]) count = 0;
+            curHealth = Math.min(curHealth + bandage[1], health);
+            
+            // 기술 연속 시전 성공이면 추가 회복량 증가
+            if(count === bandage[0]) {
+                curHealth = Math.min(curHealth + bandage[2], health);
+                count = 0;
+            }
         }
     }
     
