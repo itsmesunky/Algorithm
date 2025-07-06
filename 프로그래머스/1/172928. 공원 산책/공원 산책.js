@@ -1,66 +1,48 @@
 const solution = (park, routes) => {
-    // 공원 좌표
-    const arr = Array.from({length: park.length}, () => Array(park[0].length).fill(0));
+    // park 배열의 길이 * park[0] 길이의 2차원 배열 생성
+    const arr = Array.from({length: park.length}, () => Array(park[0].length).fill(1));
     
-    // 현재 위치를 저장할 변수
-    let [posY, posX] = [];
+    // 각 문자에 방향 저장
+    const dir = {
+        N: [-1, 0], // 위
+        S: [1, 0],  // 아래
+        W: [0, -1], // 좌
+        E: [0, 1]   // 우
+    }
     
-    // 장애물 좌표를 저장할 변수
-    const xs = [];
+    // 현재 위치 저장할 변수
+    let [posY, posX] = [0, 0];
     
-    // 장애물 존재, 좌표 벗어남 여부
-    let isExistX = false;
-    let isOverflow = false;
-    
-    // 공원 좌표에 표시
-    for(let i = 0; i < park.length; i++) {
+    loop1: for(let i = 0; i < park.length; i++) {
         for(let j = 0; j < park[i].length; j++) {
-            arr[i][j] = park[i][j];
-            
-            // 시작 지점 확인
-            if(park[i][j] === "S") {
-                posY = i;
-                posX = j;
-            }
-            
-            // 장애물 여부 확인
-            if(park[i][j] === "X") {
-                xs.push([i, j]);
+            if(park[i][j] === 'S') {
+                // 시작 위치 저장
+                [posY, posX] = [i, j];
+                break loop1;
             }
         }
     }
     
     for(const route of routes) {
-        const [op, n] = route.split(" ");
+        let [op, n] = route.split(" ");
+        let count = 0;
         
-        const move = parseInt(n);
+        // 이동할 위치
+        let [my, mx] = [posY, posX];
         
-        switch(op) {
-        case "N": // 위로 이동
-            isExistX = xs.find(([y, x]) => x === posX && y < posY && (posY - move) <= y);
-            isOverflow = posY - move < 0;
-
-            if(!isExistX && !isOverflow) posY -= move;
-            break;
-        case "S": // 아래로 이동
-            isExistX = xs.find(([y, x]) => x === posX && y > posY && (posY + move) >= y);
-            isOverflow = posY + move > park.length - 1;
-
-            if(!isExistX && !isOverflow) posY += move;
-            break;
-        case "W": // 좌로 이동
-            isExistX = xs.find(([y, x]) => y === posY && x < posX && (posX - move) <= x);
-            isOverflow = posX - move < 0;
-
-            if(!isExistX && !isOverflow) posX -= move;
-            break;
-        case "E": // 우로 이동
-            isExistX = xs.find(([y, x]) => y === posY && x > posX && (posX + move) >= x);
-            isOverflow = posX + move > park[0].length - 1;
-
-            if(!isExistX && !isOverflow) posX += move;
-            break;
+        while(count < n) {
+            my += dir[op][0];
+            mx += dir[op][1];
+            
+            // 좌표를 벗어났거나 장애물을 만났을 때 반복문 종료
+            if(!arr[my] || !arr[my][mx] || park[my][mx] === 'X') {
+                break;
+            }
+            
+            count++;
         }
+        
+        if(count === +n) [posY, posX] = [my, mx];
     }
     
     return [posY, posX];
