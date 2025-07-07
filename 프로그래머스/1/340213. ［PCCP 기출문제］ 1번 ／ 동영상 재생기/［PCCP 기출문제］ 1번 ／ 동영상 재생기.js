@@ -34,11 +34,9 @@ const solution = (video_len, pos, op_start, op_end, commands) => {
                 
                 break;
             case "next":
-                const nextPos = currPos + 10;
+                const nextPos = Math.min(currPos + 10, video_len_num);
                 
-                if(nextPos > video_len_num) {
-                    currPos = video_len_num;
-                } else if(op_start_num <= nextPos && nextPos <= op_end_num) {
+                if(op_start_num <= nextPos && nextPos <= op_end_num) {
                     currPos = op_end_num;
                 } else {
                     currPos = nextPos;
