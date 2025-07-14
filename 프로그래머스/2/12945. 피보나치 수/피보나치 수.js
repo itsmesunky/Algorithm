@@ -1,17 +1,11 @@
 const solution = (n) => {
-    const dy = Array.from({length: n + 1}, (_, i) => {
-        if(i === 0) {
-            return 0;
-        } else if(i < 3) {
-            return 1;
-        } else {
-            return 0;
-        }
-    })
+    let a = 0, b = 1;
     
-    for(let i = 3; i <= n; i++) {
-        dy[i] = BigInt(dy[i - 1]) + BigInt(dy[i - 2]);
+    for(let i = 2; i <= n; i++) {
+        const next = (a + b) % 1234567;
+        a = b;
+        b = next;
     }
     
-    return dy[n] % BigInt(1234567);
+    return b;
 }
