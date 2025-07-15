@@ -1,19 +1,17 @@
 const solution = (brown, yellow) => {
+    // 카펫의 크기는 brown 격자 개수 + yellow 격자 개수
     const totalGrid = brown + yellow;
-    
-    let height = totalGrid;
-    
-    for(let i = 1; i <= totalGrid; i++) {
-        for(let j = height; j >= 1; j--) {
-            if(i * j === totalGrid) {
-                height = j;
-                
-                if(i >= j && ((i * 2) + (j * 2) - 4 === brown)) {
-                    return [i, j];
-                }
-                
-                break;
+
+    // 카펫 안에 노란색 영역이 있기 위해서는 카펫의 최소 높이가 3이 돼야 함
+    for(let height = 3; height <= Math.sqrt(totalGrid); height++) {
+        const width = totalGrid / height;
+        
+        if(Number.isInteger(width)) {
+            const inner = (width - 2) * (height - 2);
+            
+            if(inner === yellow) {
+                return [width, height];
             }
         }
     }
-}
+};
