@@ -1,15 +1,4 @@
-const solution = (arr) => {
-    let i = 2;
-    let max = Math.max(...arr);
-    let LCM = Math.max(...arr);
-    
-    while(true) {
-        if(arr.every(v => LCM % v === 0)) {
-            break;
-        }
-        
-        LCM = max * i++;
-    }
-    
-    return LCM;
-}
+const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+const lcm = (a, b) => (a * b) / gcd(a, b);
+
+const solution = (arr) => arr.reduce((acc, curr) => lcm(acc, curr));
