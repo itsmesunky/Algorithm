@@ -4,7 +4,7 @@ const solution = (k, tangerine) => {
     const arr = [];
     
     for(const t of tangerine) {
-        arr[t - 1] = (arr[t - 1] ?? 0) + 1;
+        arr[t] = (arr[t] ?? 0) + 1;
     }
     
     arr.sort((a, b) => b - a);
