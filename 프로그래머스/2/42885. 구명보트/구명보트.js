@@ -4,14 +4,11 @@ const solution = (people, limit) => {
     let answer = 0, i = 0, j = arr.length - 1;
     
     while(i <= j) {
-        if(arr[i] + arr[j] > limit) {
-            answer++;
-            arr[j--] = 0;
-        } else {
-            answer++;
-            arr[i++] = 0;
-            arr[j--] = 0;
+        if(arr[i] + arr[j] <= limit) {
+            i++;
         }
+        j--;
+        answer++;
     }
     
     return answer;
