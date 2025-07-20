@@ -1,4 +1,9 @@
-const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
-const lcm = (a, b) => (a * b) / gcd(a, b);
+// 두 수의 최대공약수
+const GCD = (a, b) => a % b ? GCD(b, a % b) : b;
 
-const solution = (arr) => arr.reduce((acc, curr) => lcm(acc, curr));
+// 두 수의 최소공배수
+const LCM = (a, b) => a * b / GCD(a, b);
+
+const solution = (arr) => {
+    return arr.reduce((acc, cur) => LCM(acc, cur));
+}
