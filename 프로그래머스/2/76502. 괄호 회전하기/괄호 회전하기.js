@@ -1,27 +1,40 @@
-function solution(s) {
-    let answer = 0;
-    let stack = [];
-    let isCorrect = true;
-  
-    if (s.length % 2 === 1) return 0;
-
-    for(let i=0; i<s.length; i++){       
-       let str = s.slice(i) + s.slice(0,i);
-       isCorrect = true;
-        for(let n of str){
-            if(n === "[" || n === "{" || n === "(" ){
-                stack.push(n);
-            }else{
-                let opening = stack.pop();
-                if (opening === "(" && n === ")") continue;
-                if (opening === "{" && n === "}") continue;
-                if (opening === "[" && n === "]") continue;
-              	isCorrect = false;
+// 올바른 괄호인지 확인
+const isCorrect = (s) => {
+    const stack = [];
+    
+    [...s].forEach(v => {
+        switch(v) {
+            case '[': case '{': case '(':
+                stack.push(v);
                 break;
-            };
-        };
-        if (isCorrect) answer++;
-    };
-  
+            default:
+                const last = stack.at(-1);
+                
+                if((v === ']' && last === '[')
+                   || (v === '}' && last === '{')
+                   || (v === ')' && last === '(')) {
+                    stack.pop();
+                } else {
+                    stack.push(v);
+                }
+        }
+    })
+    
+    return stack.length ? false : true;
+}
+
+const solution = (s) => {
+    let answer = 0;
+    let str = [...s];
+    
+    for(let i = 0; i < s.length; i++) {
+        // 올바른 괄호이면 answer 증가
+        if(isCorrect(str.join(''))) {
+            answer++;
+        }
+        
+        str.push(str.shift());
+    }
+    
     return answer;
-};
+}
