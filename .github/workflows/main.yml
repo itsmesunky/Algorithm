@@ -1,0 +1,21 @@
+name: dispatch_action
+
+on:
+ workflow_dispatch:
+ push:
+   branches:
+     - main
+
+permissions:
+  contents: write
+
+jobs:
+ dispatch:
+   runs-on: ubuntu-latest
+   steps:
+     - name: Trigger repository dispatch
+       uses: peter-evans/repository-dispatch@v1
+       with:
+         token: ${{ secrets.GH_PAT }}
+         repository: itsmesunky/PROGRAMMERS-BADGE
+         event-type: trigger-workflow
