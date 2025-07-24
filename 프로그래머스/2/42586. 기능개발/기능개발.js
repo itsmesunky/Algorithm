@@ -1,31 +1,28 @@
 const solution = (progresses, speeds) => {
     const answer = [];
     
-    while(progresses.length) {
-        let count = 0;
-        const diff = 100 - progresses[0];
-        const day = Math.ceil(diff / speeds[0]);
+    // 기능별 남은 일수
+    const remainDays = progresses.map((v, i) => {
+        const remain = 100 - v;
+        const days = Math.ceil(remain / speeds[i]);
         
-        for(let i = 0; i < progresses.length; i++) {
-            if(progresses[i] < 100) {
-                progresses[i] += day * speeds[i];
-            }
+        return days;
+    })
+    
+    // 작업을 가리킬 인덱스
+    let i = 0;
+    
+    while(i < remainDays.length) {
+        let deployCount = 0;
+        const currentDay = remainDays[i];
+        
+        while(i < remainDays.length && currentDay >= remainDays[i]) {
+            i++;
+            deployCount++;
         }
         
-        while(true) {
-            if(progresses[0] >= 100) {
-                progresses.shift();
-                speeds.shift();
-                count++;
-            } else {
-                break;
-            }
-            
-            if(!progresses.length) break;
-        }
-        
-        answer.push(count);
+        answer.push(deployCount);
     }
     
     return answer;
-}
+};
