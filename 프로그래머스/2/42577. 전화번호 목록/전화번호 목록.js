@@ -1,8 +1,10 @@
 const solution = (phone_book) => {
-    const sorted = phone_book.sort();
+    const sorted = phone_book.sort((a, b) => a.length - b.length);
     
-    for(let i = 0; i < sorted.length - 1; i++) {
-        if(sorted[i + 1].startsWith(sorted[i])) {
+    while(sorted.length) {
+        const num = sorted.shift();
+        
+        if(phone_book.some((v, j) => v.startsWith(num))) {
             return false;
         }
     }
