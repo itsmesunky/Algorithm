@@ -13,7 +13,7 @@ const solution = (maps) => {
     
     const bfs = (map) => {
         // 행, 열, 시작점으로부터 거리
-        queue.push([0, 0, 1]);
+        queue.push([0, 0, 0]);
         
         // 시작점 방문 처리
         map[0][0] = 0;
@@ -25,6 +25,7 @@ const solution = (maps) => {
             for(let i = 0; i < 4; i++) {
                 const nx = column + dx[i];
                 const ny = row + dy[i];
+                const newDistance = distance + 1;
                 
                 // maps 영역을 벗어났을 때 다음 방향 탐색
                 if(nx < 0 || ny < 0 || nx >= m || ny >= n) {
@@ -33,12 +34,12 @@ const solution = (maps) => {
                 
                 // 해당 방향 탐색 가능하면 queue에 추가
                 if(map[ny][nx] !== 0) {
-                    queue.push([ny, nx, distance + 1]);
+                    queue.push([ny, nx, newDistance]);
                     map[ny][nx] = 0;
                 }
                 
                 if(nx === m - 1 && ny === n - 1) {
-                    return distance + 1;
+                    return newDistance + 1;
                 }
             }
         }
