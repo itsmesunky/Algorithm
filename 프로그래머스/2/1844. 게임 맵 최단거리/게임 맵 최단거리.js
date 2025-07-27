@@ -33,12 +33,14 @@ const solution = (maps) => {
                 
                 // 해당 방향 탐색 가능하면 queue에 추가
                 if(map[ny][nx] !== 0) {
+                    
+                    // 해당 방향이 적 팀의 진영이라면 거리 반환
+                    if(nx === m - 1 && ny === n - 1) {
+                        return distance + 2;
+                    }
+                    
                     queue.push([ny, nx, distance + 1]);
                     map[ny][nx] = 0;
-                }
-                
-                if(nx === m - 1 && ny === n - 1) {
-                    return distance + 2;
                 }
             }
         }
