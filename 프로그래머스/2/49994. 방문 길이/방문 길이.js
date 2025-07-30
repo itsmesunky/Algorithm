@@ -2,50 +2,41 @@ const solution = (dirs) => {
     let answer = 0;
     
     const direction = {
-        // [행, 열]
-        'L': [0, -1],
-        'R': [0, 1],
-        'U': [-1 ,0],
-        'D': [1, 0]
+        // [x축, y축]
+        'L': [-1, 0],
+        'R': [1, 0],
+        'U': [0, -1],
+        'D': [0, 1]
     }
-
-    // 특정 행열 방문 여부 저장
-    const visited = Array.from({length: 12}, () => Array.from({length: 12}, () => []));
     
-    // 초기 위치: 6행 6열
-    let pos = [6, 6];
+    // 현재 위치
+    let [currX, currY] = [0, 0];
+    
+    // 걸어본 길 저장
+    const set = new Set();
     
     for(const dir of dirs) {
-        let flag = true;
-        let [currentY, currentX] = pos;
+        // 이동할 위치
+        const nx = currX + direction[dir][0];
+        const ny = currY + direction[dir][1];
         
-        // 이동할 방향 정의
-        const ny = currentY + direction[dir][0];
-        const nx = currentX + direction[dir][1];
-
-        // 경계 넘어가면 무시
-        if(ny > 11 || nx > 11 || ny < 1 || nx < 1) {
+        // 경계 감지
+        if(nx < -5 || ny < -5 || nx > 5 || ny > 5) {
             continue;
         }
         
-        // 걸어본 길인지 확인
-        for(const [prevY, prevX] of visited[ny][nx]) {
-            if(prevY === currentY && prevX === currentX) {
-                flag = false;
-                break;
-            }
+        // 출발 X, 출발 Y => 도착 X, 도착 Y 형태로 저장(양방향)
+        let path1 = `${currX}, ${currY} => ${nx}, ${ny}`;
+        let path2 = `${nx}, ${ny} => ${currX}, ${currY}`;
+        
+        if(!set.has(path1)) {
+            answer++;
+            set.add(path1);
+            set.add(path2);
         }
         
-        pos[0] = ny;
-        pos[1] = nx;
-        
-        if(!flag) continue;
-        
-        answer++;
-        visited[ny][nx].push([currentY, currentX]);
-        visited[currentY][currentX].push([ny, nx]);
-
+        [currX, currY] = [nx, ny];
     }
-
+    
     return answer;
 }
