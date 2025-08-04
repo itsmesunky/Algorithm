@@ -1,16 +1,16 @@
 const solution = (numbers) => {
-    const n = numbers.length;
-    const answer = Array(n).fill(-1);
-    const stack = [];
-    
-    for(let i = 0; i < n; i++) {
-        while(stack.length && numbers[stack.at(-1)] < numbers[i]) {
-            answer[stack.pop()] = numbers[i];
-        }
-
-        // stack에 인덱스 삽입
-        stack.push(i);
+  const len = numbers.length;
+  const stack = [];
+  const answer = Array(len).fill(-1);
+  
+  for(let i = 0; i < len; i++) {
+    while(stack.length && numbers[i] > numbers[stack.at(-1)]) {
+      const idx = stack.pop();
+      answer[idx] = numbers[i];
     }
     
-    return answer;
+    stack.push(i);
+  }
+  
+  return answer;
 }
