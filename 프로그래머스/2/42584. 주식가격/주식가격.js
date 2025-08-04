@@ -1,18 +1,18 @@
 const solution = (prices) => {
-    const answer = [];
+    const [answer, stack, len] = [[], [], prices.length];
     
-    for(let i = 0; i< prices.length; i++) {
-        let sec = 0;
-        
-        for(let j = i + 1; j < prices.length; j++) {
-            sec++;
-            
-            if(prices[j] < prices[i]) {
-                break;
-            }
+    for(let i = 0; i < len; i++) {
+        while(stack.length && prices[i] < prices[stack.at(-1)]) {
+            const idx = stack.pop();
+            answer[idx] = i - idx;
         }
         
-        answer.push(sec);
+        stack.push(i);
+    }
+    
+    while(stack.length) {
+        const idx = stack.pop();
+        answer[idx] = len - 1 - idx;
     }
     
     return answer;
