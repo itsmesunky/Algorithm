@@ -1,33 +1,17 @@
 const solution = (order) => {
     let answer = 0; // 실을 수 있는 상자의 개수
-    let pos = 0; // order의 인덱스를 가리킬 변수
-    let main = 1;
-    let sub = []; // 보조 컨테이너 벨트
+    let main = 1; // 메인 컨테이너 벨트에서 꺼낸 상자의 번호
+    const sub = []; // 서브 컨테이너 벨트(Stack)
     
-    while(main <= order.length) {
-        let dropBox = main; // 메인 컨테이너 벨트에서 떨어지는 상자
-        let orderBox = order[pos];
+    for(const box of order) {
+         // 메인 컨테이너 벨트에서 꺼낸 상자의 번호 <= 실어야 하는 상자의 번호
+        while(main <= box) {
+            sub.push(main++);
+        }
         
-        if(dropBox === orderBox) {
-            answer++;
-            pos++;
-            main++;
-        } else if(sub.length && sub.at(-1) === orderBox) {
+        if(sub.length && sub.at(-1) === box) {
             sub.pop();
             answer++;
-            pos++;
-        } else {
-            sub.push(dropBox);
-            main++;
-        }
-    }
-    
-    while(pos < order.length && sub.length) {
-        const box = sub.pop();
-        
-        if(box === order[pos]) {
-            answer++;
-            pos++;
         } else {
             break;
         }
