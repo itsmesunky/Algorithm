@@ -11,7 +11,7 @@ const solution = (x, y, n) => {
         // queue에서 노드를 가리킬 변수
         let idx = 0;
         
-        while(queue.length) {
+        while(queue.length && idx < queue.length) {
             // 연산 횟수 증가
             count++;
             
@@ -26,15 +26,17 @@ const solution = (x, y, n) => {
                     
                     const nums = [node + n, node * 2, node * 3];
                     
-                    if(nums.some(v => v === y)) return count;
-                    
-                    // 모든 수들이 y보다 클 때 다음 노드에 대해 연산 실행
-                    if(nums.every(v => v > y)) return -1;
-                    
-                    queue.push(...nums.filter(v => v < y));
+                    for(const num of nums) {
+                        if(num === y) return count;
+                        if(num < y && !visited[num]) {
+                            queue.push(num);
+                        }
+                    }
                 }
             }
         }
+        
+        return -1;
     }
     
     return bfs();
