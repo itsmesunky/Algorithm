@@ -1,7 +1,7 @@
 const solution = (x, y, n) => {
     if(x === y) return 0; // x와 y가 같은 경우 0 반환
     
-    const dfs = () => {
+    const bfs = () => {
         // 특정 노드 방문 여부를 저장하기 위한 배열
         const visited = Array(y).fill(false);
         // 연산 횟수
@@ -37,5 +37,5 @@ const solution = (x, y, n) => {
         }
     }
     
-    return dfs();
+    return bfs();
 }
