@@ -1,44 +1,58 @@
-function solution(arr) {
-  const answer = [0, 0]; // [0의 개수, 1의 개수]
-
-  // 재귀 함수 정의
-  // startX, startY: 현재 탐색하는 사각형의 좌상단 좌표
-  // length: 현재 사각형의 한 변의 길이
-  function quad(startX, startY, length) {
-    // 기저 조건 1: 길이가 1인 사각형인 경우
-    if (length === 1) {
-      answer[arr[startX][startY]]++;
-      return;
-    }
-
-    // 기저 조건 2: 모든 원소가 같은 값인 경우
-    const firstValue = arr[startX][startY];
-    let isSame = true;
-    for (let i = startX; i < startX + length; i++) {
-      for (let j = startY; j < startY + length; j++) {
-        if (arr[i][j] !== firstValue) {
-          isSame = false;
-          break;
+const solution = (arr) => {
+    // [0의 개수, 1의 개수]
+    const answer = [0, 0];
+    
+    /**
+    * @param(startRow): 시작행
+    * @param(startCol): 시작열
+    * @param(len): 길이
+    */
+    const quad = (startRow, startCol, len) => {
+        // 길이가 1인 경우
+        if(len === 1) {
+            answer[arr[startRow][startCol]]++;
+            return;
         }
-      }
-      if (!isSame) break;
+        
+        // 시작 위치의 값
+        const firstValue = arr[startRow][startCol];
+        
+        // 해당 영역의 값이 모두 같은지 여부
+        let isSame = true;
+        
+        for(let i = startRow; i < startRow + len; i++) {
+            for(let j = startCol; j < startCol + len; j++) {
+                // 값이 같지 않다면 반복문 종료
+                if(firstValue !== arr[i][j]) {
+                    isSame = false;
+                    break;
+                }
+            }
+            
+            if(!isSame) {
+                break;
+            }
+        }
+        
+        // 값이 모두 같다면 재귀 처리 X
+        if(isSame) {
+            answer[firstValue]++;
+            return;
+        }
+        
+        const newLen = len / 2;
+        
+        quad(startRow, startCol, newLen);
+        // 우
+        quad(startRow, startCol + newLen, newLen);
+        // 하
+        quad(startRow + newLen, startCol, newLen);
+        // 우하
+        quad(startRow + newLen, startCol + newLen, newLen);
     }
-
-    if (isSame) {
-      answer[firstValue]++;
-      return;
-    }
-
-    // 재귀 호출: 4개로 분할
-    const newLength = length / 2;
-    quad(startX, startY, newLength); // 왼쪽 위
-    quad(startX, startY + newLength, newLength); // 오른쪽 위
-    quad(startX + newLength, startY, newLength); // 왼쪽 아래
-    quad(startX + newLength, startY + newLength, newLength); // 오른쪽 아래
-  }
-
-  // 초기 호출: 전체 사각형
-  quad(0, 0, arr.length);
-
-  return answer;
+    
+    // 0행 0열부터 시작
+    quad(0, 0, arr.length);
+    
+    return answer;
 }
