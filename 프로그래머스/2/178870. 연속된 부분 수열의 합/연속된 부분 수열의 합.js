@@ -17,11 +17,11 @@ const solution = (sequence, k) => {
         } else if(sum > k) {
             sum -= sequence[startIdx++];
         } else {
-            answer.push([startIdx, endIdx]);
+            answer.push([startIdx, endIdx, endIdx - startIdx]);
             sum -= sequence[startIdx++];
             sum += sequence[++endIdx];
         }
     }
     
-    return answer.sort((a, b) => (a[1] - a[0]) - (b[1] - b[0]))[0];
+    return answer.sort((a, b) => a[2] - b[2])[0].slice(0, 2);
 }
