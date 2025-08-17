@@ -1,27 +1,20 @@
 const solution = (sequence, k) => {
-    const answer = [];
+    let start = 0, sum = 0;
+    let answer = [0, sequence.length - 1]; // 기본값 (최대 구간)
     
-    if(sequence[0] === k) {
-        return [0, 0];
-    }
-    
-    // 투 포인터
-    let startIdx = 0, endIdx = 1;
-    
-    // 부분 수열의 합
-    let sum = sequence[startIdx] + sequence[endIdx];
-    
-    while(startIdx <= endIdx && endIdx < sequence.length) {
-        if(sum < k) {
-            sum += sequence[++endIdx];
-        } else if(sum > k) {
-            sum -= sequence[startIdx++];
-        } else {
-            answer.push([startIdx, endIdx, endIdx - startIdx]);
-            sum -= sequence[startIdx++];
-            sum += sequence[++endIdx];
+    for (let end = 0; end < sequence.length; end++) {
+        sum += sequence[end];
+        
+        while (sum > k) {
+            sum -= sequence[start++];
+        }
+        
+        if (sum === k) {
+            if ((end - start) < (answer[1] - answer[0])) {
+                answer = [start, end];
+            }
         }
     }
     
-    return answer.sort((a, b) => a[2] - b[2])[0].slice(0, 2);
-}
+    return answer;
+};
