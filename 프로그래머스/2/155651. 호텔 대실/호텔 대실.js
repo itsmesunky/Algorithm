@@ -1,84 +1,31 @@
-class MinHeap {
-  constructor() {
-    this.heap = [];
-  }
-
-  // 값 삽입
-  push(value) {
-    this.heap.push(value);
-    this._bubbleUp();
-  }
-
-  // 최소값 반환 + 제거
-  pop() {
-    if (this.heap.length === 1) return this.heap.pop();
-    const min = this.heap[0];
-    this.heap[0] = this.heap.pop();
-    this._bubbleDown();
-    return min;
-  }
-
-  // 최소값 확인 (제거 X)
-  peek() {
-    return this.heap[0];
-  }
-
-  size() {
-    return this.heap.length;
-  }
-
-  _bubbleUp() {
-    let idx = this.heap.length - 1;
-    while (idx > 0) {
-      const parent = Math.floor((idx - 1) / 2);
-      if (this.heap[parent] <= this.heap[idx]) break;
-      [this.heap[parent], this.heap[idx]] = [this.heap[idx], this.heap[parent]];
-      idx = parent;
-    }
-  }
-
-  _bubbleDown() {
-    let idx = 0;
-    const length = this.heap.length;
-
-    while (true) {
-      let left = idx * 2 + 1;
-      let right = idx * 2 + 2;
-      let smallest = idx;
-
-      if (left < length && this.heap[left] < this.heap[smallest]) {
-        smallest = left;
-      }
-      if (right < length && this.heap[right] < this.heap[smallest]) {
-        smallest = right;
-      }
-
-      if (smallest === idx) break;
-      [this.heap[idx], this.heap[smallest]] = [this.heap[smallest], this.heap[idx]];
-      idx = smallest;
-    }
-  }
-}
-
-
+/**
+* convertTime: 'HH:MM' 형식의 문자열이 주어지면 분 단위로 변환해주는 함수
+* @param(str): 'HH:MM' 형식의 문자열
+*/
 const convertTime = (str) => {
-  const [hour, min] = str.split(":").map(Number);
-  return hour * 60 + min;
+    const [hour, min] = str.split(":").map(Number);
+    return hour * 60 + min;
 }
 
 const solution = (book_time) => {
-  const reservations = book_time
-    .map(([checkIn, checkOut]) => [convertTime(checkIn), convertTime(checkOut)])
-    .sort((a, b) => a[0] - b[0]);
-
-  const rooms = new MinHeap();
-
-  for (const [checkIn, checkOut] of reservations) {
-    if (rooms.size() && rooms.peek() + 10 <= checkIn) {
-      rooms.pop(); // 가장 빨리 끝나는 방 재사용
+    // 1. 입실 시간 기준으로 오름차순 정렬
+    const sortedBookTime = book_time.map(([checkIn, checkOut]) =>
+                                            [convertTime(checkIn), convertTime(checkOut)]
+                                        ).sort((a, b) => a[0] - b[0]);
+    
+    // 2. 방 퇴실 시간(청소 시간 포함) 저장 배열
+    const rooms = [];
+    
+    for(const [checkIn, checkOut] of sortedBookTime) {
+        // 3. 입실 가능한 방을 찾아봄 
+        const idx = rooms.findIndex(room => room <= checkIn);
+        
+        if(idx >= 0) {
+            rooms[idx] = checkOut + 10;
+        } else {
+            rooms.push(checkOut + 10);
+        }
     }
-    rooms.push(checkOut);
-  }
-
-  return rooms.size();
+    
+    return rooms.length;
 }
