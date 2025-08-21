@@ -2,11 +2,10 @@
 const GCD = (a, b) => a % b ? GCD(b, a % b) : b;
 
 const solution = (arrayA, arrayB) => {
+    let answers = 0;
+    
     let gcdA; // 철수가 가진 카드의 최대 공약수를 저장
     let gcdB; // 영희가 가진 카드의 최대 공약수를 저장
-    
-    // 정답 후보가 될 수 있는 수
-    const answers = [];
     
     // 카드가 각각 한 개인 경우
     if(arrayA.length === 1) {
@@ -25,16 +24,16 @@ const solution = (arrayA, arrayB) => {
     if(gcdA > 1) { // 철수가 가진 카드들에 적힌 모든 숫자를 나눌 수 있는 수
         // 영희가 가진 카드들은 모두 나눠지지 않아야 함
         if(!(arrayB.some(v => v % gcdA === 0))) {
-            answers.push(gcdA);
+            answers = Math.max(answers, gcdA);
         }
     }
     
     if(gcdB > 1) { // 영희가 가진 카드들에 적힌 모든 숫자를 나눌 수 있는 수
         // 철수가 가진 카드들은 모두 나눠지지 않아야 함
         if(!(arrayA.some(v => v % gcdB === 0))) {
-            answers.push(gcdB);
+            answers = Math.max(answers, gcdB);
         }
     }
     
-    return answers.length ? Math.max(...answers) : 0;
+    return answers;
 }
