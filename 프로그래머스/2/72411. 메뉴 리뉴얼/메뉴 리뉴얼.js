@@ -1,74 +1,61 @@
 /**
-* makeCombine: 특정 문자열과 자연수가 주어지면 자연수의 길이만큼 문자열을 조합해서 만들어주는 헬퍼 함수(DFS)
+* makeCombine: 특정 문자열과 자연수가 주어지면 자연수의 길이만큼 문자열을 조합해서 만들어주는 헬퍼 함수
 * @param(str): 특정 문자열
 * @param(n): 자연수
 */
 const makeCombine = (str, n) => {
     const combines = [];
-    
-    // 특정 인덱스 방문 여부 저장
-    const visited = Array(str.length).fill(false);
-    
-    const dfs = (idx, combineStr) => {
-        // 1. 탈출 조건
-        if(combineStr.length === n) {
+    const make = (idx, combineStr) => {
+        if (combineStr.length === n) {
             combines.push(combineStr);
             return;
         }
-        
-        // 2. 수행 동작
-        for(let i = idx; i < str.length; i++) {
-            if(!visited[i]) {
-                // 2.1 방문 처리
-                visited[i] = true;
-                dfs(i + 1, combineStr + str[i]);
-                // 2.2 백트래킹
-                visited[i] = false;
-            }
+        for (let i = idx; i < str.length; i++) {
+            make(i + 1, combineStr + str[i]);
         }
-    }
-    
-    dfs(0, '');
-    
+    };
+    make(0, '');
     return combines;
-}
-
+};
 
 const solution = (orders, course) => {
     const answer = [];
-    
-    // 0. 조합 메뉴 : 주문 수
-    const combineCount = [];
-    
-    // 1. orders 각 문자열 오름차순 정렬
+    const courseMap = new Map();
+
+    // 1. 모든 주문을 알파벳 순으로 정렬합니다.
     const ordered = orders.map(order => [...order].sort().join(''));
-    
-    // 2. course 순회하면서 만들 수 있는 조합 만들기
-    for(const num of course) {
-        // 3. 주문별 조합 주문 횟수 저장
-        for(const order of ordered) {
+
+    // 2. 각 주문에서 가능한 모든 조합을 생성하고 Map에 횟수를 기록합니다.
+    for (const order of ordered) {
+        for (const num of course) {
+            // 주문 길이가 num보다 작으면 조합을 만들 수 없으므로 건너뜁니다.
+            if (order.length < num) continue;
+            
             const combines = makeCombine(order, num);
-            for(const combine of combines) {
-                const idx = combineCount.findIndex(([v, _]) => v === combine);
-                
-                if(idx === -1) {
-                    combineCount.push([combine, 1]);
-                } else {
-                    combineCount[idx][1] = combineCount[idx][1] + 1;
-                }
+            for (const combine of combines) {
+                courseMap.set(combine, (courseMap.get(combine) || 0) + 1);
             }
         }
     }
-    
-    // 4.
-    for(const num of course) {
-        // 메뉴 조합별 최대 주문 수
-        const combines = combineCount.filter(([combine, count]) => combine.length === num && count >= 2);
-        const max = Math.max(...combines.map(([_, count]) => count));
-        
-        answer.push(...combines.filter(([_, c]) => c === max).map(([combine, _]) => combine));
+
+    // 3. course 길이에 따라 최대 횟수를 가진 조합을 찾아 정답 배열에 추가합니다.
+    for (const num of course) {
+        let maxCount = 0;
+        const candidates = [];
+
+        for (const [key, value] of courseMap.entries()) {
+            if (key.length === num && value >= 2) {
+                if (value > maxCount) {
+                    maxCount = value;
+                    candidates.length = 0; // 더 큰 값 발견 시 이전 후보 초기화
+                    candidates.push(key);
+                } else if (value === maxCount) {
+                    candidates.push(key);
+                }
+            }
+        }
+        answer.push(...candidates);
     }
     
     return answer.sort();
-    
-}
+};
