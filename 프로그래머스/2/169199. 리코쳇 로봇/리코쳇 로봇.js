@@ -1,67 +1,67 @@
-function solution(board) {
-    const R = board.length;
-    const C = board[0].length;
-    const visited = Array.from({ length: R }, () => Array(C).fill(false));
+/**
+* 문제 해결 시나리오
+* 1. 특정 노드에서 4방향으로 슬라이드
+* 2. 'D'를 만나거나 벽에 부딪치는 경우 멈춤
+* 3. 도착 지점이 'G'인 경우 count 반환
+*/
+const solution = (board) => {
+    const R = board.length; // 행 크기
+    const C = board[0].length; // 열 크기
+    
+    // 각 노드 방문 여부 저장
+    const visited = Array.from({length: R}, () => Array(C).fill(false));
+    
+    // 시작 노드 찾기
+    const sRow = board.findIndex(str => str.includes('R'));
+    const sCol = board[sRow].indexOf('R');
+    
+    // 시작 노드 방문 처리
+    visited[sRow][sCol] = true;
+    
+    // 도착 노드 저장
     const queue = [];
-
-    // 시작 지점 'R'을 찾아 큐에 추가
-    let startR, startC;
-    for (let i = 0; i < R; i++) {
-        for (let j = 0; j < C; j++) {
-            if (board[i][j] === 'R') {
-                startR = i;
-                startC = j;
-                break;
-            }
+    
+    // 큐에 [도착 행, 도착 열, 이동 횟수] 형태로 저장
+    queue.push([sRow, sCol, 0]);
+    
+    while(queue.length) {
+        // 출발 노드
+        const [startRow, startCol, count] = queue.shift();
+        
+        if(board[startRow][startCol] === 'G') {
+            return count;
         }
-        if (startR !== undefined) break;
-    }
-
-    queue.push([startR, startC, 0]); // [행, 열, 이동 횟수]
-    visited[startR][startC] = true;
-
-    // 4방향 (상, 하, 좌, 우) 이동
-    const dy = [-1, 1, 0, 0];
-    const dx = [0, 0, -1, 1];
-
-    while (queue.length > 0) {
-        const [currR, currC, moves] = queue.shift();
-
-        // 목표 지점 'G'에 도착했으면 이동 횟수 반환
-        if (board[currR][currC] === 'G') {
-            return moves;
-        }
-
-        // 4방향으로 미끄러져 멈추는 지점 탐색
-        for (let i = 0; i < 4; i++) {
-            let nextR = currR;
-            let nextC = currC;
-
-            // 벽('D')이나 경계에 닿을 때까지 이동
-            while (
-                nextR >= 0 && nextR < R &&
-                nextC >= 0 && nextC < C &&
-                board[nextR][nextC] !== 'D'
-            ) {
-                nextR += dy[i];
-                nextC += dx[i];
+        
+        // 4방향 정의(상/하/좌/우)
+        const dy = [-1, 1, 0, 0];
+        const dx = [0, 0, -1, 1];
+        
+        for(let i = 0; i < 4; i++) {
+            let ny = startRow;
+            let nx = startCol;
+            
+            // 가장자리나 'D' 만나기 전까지 직진
+            while(ny >= 0 && nx >= 0 && ny < R && nx < C && board[ny][nx] !== 'D') {
+                ny += dy[i];
+                nx += dx[i];
             }
-
-            // 멈춘 지점은 벽이나 경계 바로 앞이므로 한 칸 되돌리기
-            nextR -= dy[i];
-            nextC -= dx[i];
-
-            // 미끄러지기 전 위치와 동일하거나 이미 방문한 위치는 스킵
-            if ((nextR === currR && nextC === currC) || visited[nextR][nextC]) {
+            
+            // 한 칸 뒤로 이동
+            ny -= dy[i];
+            nx -= dx[i];
+            
+            // 같은 위치이거나 방문한 노드라면 다음 방향 탐색
+            if((startRow === ny && startCol === nx) || visited[ny][nx]) {
                 continue;
             }
-
-            // 새로운 위치를 방문 처리하고 큐에 추가
-            visited[nextR][nextC] = true;
-            queue.push([nextR, nextC, moves + 1]);
+            
+            // 도착 노드 방문 처리
+            visited[ny][nx] = true;
+            
+            // 도착 노드 큐에 저장
+            queue.push([ny, nx, count + 1]);
         }
     }
-
-    // 목표 지점에 도달할 수 없는 경우
+    
     return -1;
 }
