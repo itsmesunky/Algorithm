@@ -1,24 +1,25 @@
 const solution = (n, k) => {
-    let answer = [];
-    let numbers = Array.from({length: n}, (_, i) => i + 1);
-    let factorial = [1];
+    const answer = [];
     
-    // n-1까지의 팩토리얼 값 미리 계산
+    const numbers = Array.from({length: n}, (_, i) => i + 1);
+    
+    // 순열 계산을 위한 팩토리얼 미리 정의
+    const factorial = [1];
     for(let i = 1; i < n; i++) {
         factorial[i] = factorial[i - 1] * i;
     }
     
-    // k를 1부터 시작하는 인덱스로 조정
-    k--; 
+    // 0-Based 인덱싱을 위해 k값 감소 처리
+    k--;
     
-    for(let i = n; i >= 1; i--) {
-        const index = Math.floor(k / factorial[i - 1]);
-        answer.push(numbers[index]);
+    for(let i = n; i > 0; i--) {
+        // k번째 수가 몇 번째 순열에 있는지 확인
+        const idx = Math.floor(k / factorial[i - 1]);
+        answer.push(numbers[idx]);
         
-        // 사용한 숫자는 제거
-        numbers.splice(index, 1); 
+        // 해당 수 제거
+        numbers.splice(idx, 1);
         
-        // k 값 업데이트
         k %= factorial[i - 1];
     }
     
