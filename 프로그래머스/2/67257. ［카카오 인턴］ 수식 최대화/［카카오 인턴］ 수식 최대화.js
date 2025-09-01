@@ -1,46 +1,58 @@
-function solution(expression) {
-    const operators = ['+', '-', '*'];
-    const permutations = [];
-    const visited = new Array(operators.length).fill(false);
+/**
+* 문제 해결 시나리오
+* 1.
+*/
+const solution = (expression) => {
+    let answer = 0;
     
-    // 연산자 순열 생성 함수 (DFS를 이용한 백트래킹)
-    function getPermutations(arr, result) {
-        if (arr.length === operators.length) {
-            permutations.push([...arr]);
+    const visited = Array(3).fill(false);
+    const operators = ['*', '+', '-'];
+    
+    // 순열 저장 배열
+    const perms = [];
+    
+    // 1. 연산자 3개 우선순위 순열 만들기(DFS)
+    const getPermutation = (arr) => {
+        // 1.1 탈출 조건
+        if(arr.length === operators.length) {
+            perms.push([...arr]);
             return;
         }
-
-        for (let i = 0; i < operators.length; i++) {
-            if (!visited[i]) {
+        
+        // 1.2 수행 동작
+        for(let i = 0; i < operators.length; i++) {
+            if(!visited[i]) {
                 visited[i] = true;
                 arr.push(operators[i]);
-                getPermutations(arr, result);
+                getPermutation(arr);
                 arr.pop();
                 visited[i] = false;
             }
         }
     }
     
-    getPermutations([], permutations);
-
-    const numbers = expression.split(/[^0-9]/).map(Number);
-    const ops = expression.split(/[0-9]+/).filter(op => op);
+    getPermutation([]);
     
-    let maxAbsValue = 0;
-
-    for (const perm of permutations) {
-        const tempNumbers = [...numbers];
-        const tempOps = [...ops];
-
-        for (const op of perm) {
-            let i = 0;
-            while (i < tempOps.length) {
-                if (tempOps[i] === op) {
-                    let result;
-                    const num1 = tempNumbers[i];
-                    const num2 = tempNumbers[i + 1];
-
-                    switch (op) {
+    // 2. 수식 내 피연산자 및 연산자 구분
+    const numbers = expression.split(/[^0-9]/).map(Number);
+    const opers = expression.split(/[0-9]/).filter(op => op); // 빈 문자열 제거
+    
+    // 3. 우선순위 수열만큼 루프
+    for(const perm of perms) {
+        // 3.1 매순열마다 새로운 계산을 위해 shallow copy
+        const copiedNumbers = [...numbers];
+        const copiedOpers = [...opers];
+        
+        for(const op of perm) {
+            let idx = 0;
+            while(idx < copiedOpers.length) {
+                if(copiedOpers[idx] === op) {
+                    let result = 0;
+                    
+                    const num1 = copiedNumbers[idx];
+                    const num2 = copiedNumbers[idx + 1];
+                    
+                    switch(op) {
                         case '+':
                             result = num1 + num2;
                             break;
@@ -51,17 +63,17 @@ function solution(expression) {
                             result = num1 * num2;
                             break;
                     }
-
-                    tempNumbers.splice(i, 2, result);
-                    tempOps.splice(i, 1);
+                    
+                    copiedNumbers.splice(idx, 2, result);
+                    copiedOpers.splice(idx, 1);
                 } else {
-                    i++;
+                    idx++;
                 }
             }
         }
         
-        maxAbsValue = Math.max(maxAbsValue, Math.abs(tempNumbers[0]));
+        answer = Math.max(answer, Math.abs(copiedNumbers[0]));
     }
     
-    return maxAbsValue;
+    return answer;
 }
