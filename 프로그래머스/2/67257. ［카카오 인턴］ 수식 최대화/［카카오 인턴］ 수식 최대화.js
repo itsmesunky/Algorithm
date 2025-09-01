@@ -1,6 +1,7 @@
 /**
 * 문제 해결 시나리오
-* 1.
+* 1. 연산자 3개로 만들 수 있는 순열 만듥기
+* 2. 해당 순열로 모든 경우의 수를 계산
 */
 const solution = (expression) => {
     let answer = 0;
@@ -32,6 +33,8 @@ const solution = (expression) => {
     }
     
     getPermutation([]);
+    
+    console.log(perms);
     
     // 2. 수식 내 피연산자 및 연산자 구분
     const numbers = expression.split(/[^0-9]/).map(Number);
