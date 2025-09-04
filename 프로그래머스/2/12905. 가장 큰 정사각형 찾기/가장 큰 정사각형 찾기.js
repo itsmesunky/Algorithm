@@ -1,37 +1,26 @@
-function solution(board) {
-    const rows = board.length;
-    const cols = board[0].length;
-    let maxSide = 0;
-
-    // 1x1 크기 보드인 경우
-    if (rows < 2 || cols < 2) {
-        // 보드에 1이 하나라도 있으면 1, 없으면 0 반환
-        return board.some(row => row.includes(1)) ? 1 : 0;
+const solution = (board) => {
+    let answer = 0;
+    
+    const R = board.length;
+    const C = board[0].length;
+    
+    if(R === 1 && C === 1 && board[0][0] === 1) {
+        return 1;
     }
-
-    const dp = Array.from({ length: rows }, () => Array(cols).fill(0));
-
-    // 첫 행과 열은 그대로 복사
-    for (let i = 0; i < rows; i++) {
-        dp[i][0] = board[i][0];
-        if (dp[i][0] === 1) maxSide = 1;
-    }
-    for (let j = 0; j < cols; j++) {
-        dp[0][j] = board[0][j];
-        if (dp[0][j] === 1) maxSide = 1;
-    }
-
-    // DP 점화식 적용
-    for (let i = 1; i < rows; i++) {
-        for (let j = 1; j < cols; j++) {
-            if (board[i][j] === 1) {
-                dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1;
-                if (dp[i][j] > maxSide) {
-                    maxSide = dp[i][j];
-                }
+    
+    // 원본 배열을 수정하지 않기 위해 deep copy
+    const copyBoard = board.map(row => [...row]);
+    
+    for(let row = 0; row < R; row++) {
+        for(let col = 0; col < C; col++) {
+            if(0 < row && 0 < col && copyBoard[row][col] === 1) {
+                // 현재 값이 1일 때 좌(←), 좌상(↖), 상(↑) 값 중 최솟값 확인
+                const arr = [copyBoard[row][col-1], copyBoard[row-1][col-1], copyBoard[row-1][col]];
+                copyBoard[row][col] = Math.min(...arr) + 1;
+                answer = Math.max(answer, copyBoard[row][col]);
             }
         }
     }
-
-    return maxSide * maxSide;
+    
+    return Math.pow(answer, 2);
 }
