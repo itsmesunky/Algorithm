@@ -10,34 +10,22 @@ const solution = (s) => {
     for(let i = 1; i <= Math.floor(len / 2); i++) { // 압축 단위
         // 압축 결과 문자열
         let result = '';
-        
-        const stack = [s.slice(0, i)];
+        let prev = s.slice(0, i);
+        let count = 1;
         
         for(let j = i; j < len; j += i ) { // 압축 시작 지점
-            const sLen = stack.length;
-            const prev = stack.at(-1);
             const curr = s.slice(j, i + j);
             
             if(prev === curr) {
-                stack.push(curr);
+                count++;
             } else {
-                if(sLen > 1) {
-                    result += sLen;
-                }
-                result += prev;
-                stack.length = 0;
-                stack.push(curr);
+                result += (count > 1 ? count : "") + prev;
+                prev = curr;
+                count = 1;
             }
         }
         
-        const sLen = stack.length;
-        
-        if(sLen) {
-            if(sLen > 1) {
-                result += sLen;
-            }
-            result += stack.at(-1);
-        }
+        result += (count > 1 ? count : "") + prev;
         
         answer = Math.min(answer, result.length);
     }
