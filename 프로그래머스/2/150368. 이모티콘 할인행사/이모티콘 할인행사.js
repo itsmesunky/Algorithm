@@ -31,16 +31,16 @@ const solution = (users, emoticons) => {
     // 최대 서비스 가입자 수, 최대 판매액
     let maxCount = 0, maxAmount = 0;
     
-    for(const saleRates of combines) {
+    for(const combine of combines) {
         // 할인율 조합별 서비스 가입자 수, 판매액
         let regCount = 0, amount = 0;
         
         for(const [userRate, userPrice] of users) {
             let userAmount = 0;
             
-            for(let i = 0; i < saleRates.length; i++) {
+            for(let i = 0; i < combine.length; i++) {
                 const originPrice = emoticons[i];
-                const saleRate = saleRates[i];
+                const saleRate = combine[i];
                 
                 if(userRate <= saleRate) {
                     userAmount += originPrice * ((100 - saleRate) / 100);
@@ -54,9 +54,8 @@ const solution = (users, emoticons) => {
             }
         }
         
-        if(maxCount === regCount && maxAmount < amount) {
-            maxCount = regCount;
-            maxAmount = amount;
+        if(maxCount === regCount) {
+            maxAmount = Math.max(maxAmount, amount);
         } else if(maxCount < regCount) {
             maxCount = regCount;
             maxAmount = amount;
