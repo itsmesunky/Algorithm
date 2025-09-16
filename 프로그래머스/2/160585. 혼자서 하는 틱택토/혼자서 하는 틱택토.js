@@ -1,75 +1,53 @@
 /**
 * 문제 해결 시나리오
-* 1. board가 주어질 때, 게임 시작전인지 아닌지를 판단
-* 2. 게임 시작전이 아니라면 문제 조건에 맞게 규칙을 지켰는지 판단
+* 1. 주어지는 board에서 'O'와 'X'의 개수를 저장
+* 2. 개수 비교를 통해, 규칙에 맞는 게임판인지 아닌지 판단하면 됨
 */
 const solution = (board) => {
-    /**
-    * isGameStart: 게임 시작 전인지 아닌지 판단해주는 함수
-    */
-    const isGameStart = () => {
-        return !board.every(str => str === "...");
+    // 1. 'O', 'X' 개수 판단
+    let oCnt = 0, xCnt = 0;
+    board.forEach(str => [...str].forEach(char => char === 'O' ? oCnt++ : char === 'X' && xCnt++));
+    
+    // 2. 개수 비교
+    if(oCnt < xCnt || oCnt - xCnt > 1) {
+        return 0;
     }
     
     /**
-    * isVictory: 특정 문자가 틱택토 게임에서 이겼는지 아닌지 판단해주는 함수
+    * isWin: 특정 문자를 매개변수로 전달받아, 해당 문자의 틱택토 게임 승리 결과 반환 함수
     * @param(char): 'O' 또는 'X'
     */
-    const isVictory = (char) => {
-        // 행 체크
-        for(let row = 0; row < 3; row++) {
-            if([...board[row]].every(v => v === char)) {
-                return true;
-            }
-        }
+    const isWin = (char) => {
+        const lines = [
+            // 1. 행 체크
+            [[0, 0], [0, 1], [0, 2]], [[1, 0], [1, 1], [1, 2]], [[2, 0], [2, 1], [2, 2]],
+            // 2. 열 체크
+            [[0, 0], [1, 0], [2, 0]], [[0, 1], [1, 1], [2, 1]], [[0, 2], [1, 2], [2, 2]],
+            // 3. 대각선 체크
+            [[0, 0], [1, 1], [2, 2]], [[0, 2], [1, 1], [2, 0]]
+        ];
         
-        // 열 체크
-        const cols = [[], [], []];
-        board.forEach(str => [...str].forEach((char, i) => cols[i].push(char)));
-        for(const arr of cols) {
-            if(arr.every(v => v === char)) {
-                return true;
-            }
-        }
-        
-        // 대각선 체크
-        let col = 0;
-        if(board.map(v => v[col++]).every(v => v === char)) return true;
-        if(board.map(v => v[--col]).every(v => v === char)) return true;
-        
-        return false;
+        return lines.some(line => line.every(([r, c]) => board[r][c] === char));
     }
     
-    if(!isGameStart()) { // 게임 시작전인 경우
-        return 1;
-    } else {
-        // board에서 O와 X의 개수 저장
-        let O = 0, X = 0, E = 0;
-        board.forEach(str => [...str].forEach(char => {
-            if(char === 'O') {
-                O++;
-            } else if(char === 'X') {
-                X++;
-            } else {
-                E++;
-            }
-        }));
-                      
-        // O와 X의 차이를 계산
-        const diff = O - X;
-        
-        if(!diff) { // 둘의 개수가 같은 경우, 'O'가 이긴 이력이 있으면 안됨
-            return isVictory('O') ? 0 : 1;
-        } else { // 둘의 개수가 다른 경우에는
-            if(diff > 1 || diff < 0) { // 음수 또는 2개 이상 차이나는 경우는 나올 수 없는 상황
-                return 0;
-            } else {
-                if(isVictory('X')) {
-                    return 0;
-                } else {
-                    return 1;
-                }
-            }
-        }
+    const isOWin = isWin('O');
+    const isXWin = isWin('X');
+    
+    // 둘 다 이긴 경우
+    if(isOWin && isXWin) {
+        return 0;
     }
+    
+    // O가 이겼는데 개수가 같은 경우
+    if(isOWin && oCnt === xCnt) {
+        return 0;
+    }
+    
+    // X가 이겼는데 O가 더 많은 경우
+    if(isXWin && oCnt > xCnt) {
+        return 0;
+    }
+    
+    
+    return 1;
 }
