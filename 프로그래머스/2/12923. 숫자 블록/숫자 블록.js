@@ -1,31 +1,25 @@
+/**
+* 문제 해결 시나리오
+* 1. 특정 위치에 최종적으로 쌓이는 블럭은 해당 블럭의 루트 값임
+*/
 const solution = (begin, end) => {
-    const result = [];
-
-    for (let n = begin; n <= end; n++) {
-        if (n === 1) { // 1번 블록은 항상 0
-            result.push(0);
+    const arr = [];
+    
+    for(let i = begin; i <= end; i++) {
+        if(i === 1) {
+            arr.push(0);
+            continue;
+        } else if(i === 2 || i === 3) {
+            arr.push(1);
             continue;
         }
-
-        let block = 1; // 기본값
-
-        // √n 까지만 탐색
-        for (let i = 2; i * i <= n; i++) {
-            if (n % i === 0) {
-                // 큰 약수를 선택해야 하므로 몫 사용
-                const divisor = n / i;
-
-                if (divisor <= 10_000_000) {
-                    block = divisor;
-                    break; // 가장 큰 값 찾으면 종료
-                } else {
-                    block = i; // 몫이 너무 크면 작은 쪽을 채택
-                }
+        for(let j = 2; j <= 1000000000; j++) {
+            if(!(i % j)) {
+                arr.push(j);
+                break;
             }
         }
-
-        result.push(block);
     }
-
-    return result;
-};
+    
+    console.log(arr);
+}
