@@ -1,46 +1,27 @@
 /**
 * 문제 해결 시나리오
-* 1. cards 각 원소에 대해 재귀 실행
-* 2. 재귀 실행 중, 최대값 찾아 반환
+* 1. 각 상자는 어떤 상자를 선택하더라도 같은 그룹에 속하게 됨
+* 2. 그룹별 상자 개수 저장 후, 상위 2개의 값을 곱하면 됨
 */
 const solution = (cards) => {
-    let answer = 0;
-    let copiedCards = [0, ...cards];
-    const len = copiedCards.length;
+    const len = cards.length;
+    const groups = [];
+    const visited = Array(len + 1).fill(false);
     
-    const recursive = (idx, visited) => {
-        let cnt = 0;
-        let nextBox = copiedCards[idx];
+    for(let i = 0; i < len; i++) {
+        let count = 0;
+        let startCard = cards[i];
         
-        while(true) {
-            if(!visited[nextBox]) {
-                visited[nextBox] = true;
-                nextBox = copiedCards[nextBox];
-                cnt++;
-            } else {
-                break;
-            }
+        while(!visited[startCard]) {
+            visited[startCard] = true;
+            startCard = cards[startCard - 1];
+            count++;
         }
         
-        return cnt;
+        groups.push(count);
     }
     
-    for(let idx = 1; idx < len; idx++) {
-        const visited = Array.from({length: len + 1}, (_, i) => i === 0);
-        visited[idx] = true;
-        
-        // 1번 상자 그룹에 속한 상자의 수
-        const firstGroupCount = recursive(idx, visited) + 1;
-        
-        const i = visited.findIndex(v => !v);
-        
-        let secondGroupCount = 0;
-        for(let j = i; j < len; j++) {
-            secondGroupCount = Math.max(secondGroupCount, recursive(j, [...visited]));
-        }
-        
-        answer = Math.max(answer, firstGroupCount * secondGroupCount);
-    }
+    groups.sort((a, b) => b - a);
     
-    return answer;
+    return groups.length === 1 ? 0 : groups[0] * groups[1];
 }
