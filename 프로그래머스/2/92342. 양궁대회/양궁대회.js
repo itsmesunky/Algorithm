@@ -1,61 +1,87 @@
-function solution(n, info) {
-    let maxDiff = 0;
-    let bestResult = [-1];
-    const ryanShots = Array(11).fill(0);
+/**
+* 문제 해결 시나리오
+* 1. n개의 화살을 각 과녁에 어피치보다 1개 많게 배팅(DFS), 배팅 후에는 해당 과녁 0으로 초기화(백트래킹)
+* 2. 모든 화살을 소진했다면 이전의 점수와 차이 비교
+* 3. 점수차가 같다면 낮은 과녁 점수를 더 많이 맞춘 것으로 갱신
+*/
 
-    function calcScore(ryan, apeach) {
-        let ryanScore = 0;
-        let apeachScore = 0;
-        for (let i = 0; i < 11; i++) {
-            if (ryan[i] > apeach[i]) {
-                ryanScore += (10 - i);
-            } else if (apeach[i] > 0) {
-                apeachScore += (10 - i);
-            }
-        }
-        return ryanScore - apeachScore;
-    }
+/**
+* getDiffScore: 어피치와 라이언의 점수 차이를 반환하는 함수
+* @param(appeach): 어치피의 과녁판
+* @param(ryan): 라이언의 과녁판
+*/
+const getDiffScore = (appeach, ryan) => {
+    let appeachScore = 0, ryanScore = 0;
     
-    function dfs(idx, arrowsLeft) {
-        if (arrowsLeft === 0 || idx === 11) {
-            if (arrowsLeft > 0) {
-                ryanShots[10] += arrowsLeft;
-            }
+    appeach.forEach((score, idx) => {
+        if(score < ryan[idx]) {
+            ryanScore += 10 - idx
+        } else if(score && score >= ryan[idx]) {
+            appeachScore += 10 - idx;
+        }
+    });
+    
+    return ryanScore - appeachScore;
+}
 
-            const diff = calcScore(ryanShots, info);
-            
-            if (diff > maxDiff) {
+const solution = (n, info) => {
+    // 점수 과녁 개수
+    const len = 10;
+    
+    // 어피치와 라이언의 최대 점수차
+    let maxDiff = 0;
+    
+    // 라이언 과녁판
+    const ryanInfo = Array(11).fill(0);
+    
+    // 라이언 점수 과녁 기록
+    let result = [-1];
+    
+    /**
+    * dfs: 10 ~ 0점까지의 각 과녁판에 어피치보다 1개 많게 갱신 시뮬레이션 후, 백트래킹
+    * @param(left): 남은 화살 수
+    * @param(idx): 점수 과녁
+    */
+    const dfs = (left, idx) => {
+        if(!left || idx === len) { // 남은 화살이 없는 경우
+            if(left) {
+                ryanInfo[idx] += left;
+            }
+            // 점수 차이 비교
+            const diff = getDiffScore(info, [...ryanInfo]);
+            if(maxDiff < diff) {
                 maxDiff = diff;
-                bestResult = [...ryanShots];
-            } else if (diff > 0 && diff === maxDiff) {
-                for (let i = 10; i >= 0; i--) {
-                    if (ryanShots[i] > bestResult[i]) {
-                        bestResult = [...ryanShots];
+                result = [...ryanInfo];
+            } else if(maxDiff === diff) {
+                // 점수 차이가 이전과 같은 경우, 낮은 점수 과녁 값 비교
+                for(let i = len; i >= 0; i--) {
+                    if(ryanInfo[i] > result[i]) {
+                        result = [...ryanInfo];
                         break;
-                    } else if (bestResult[i] > ryanShots[i]) {
+                    } else if(result[i] > ryanInfo[i]) {
                         break;
                     }
                 }
             }
-
-            if (arrowsLeft > 0) {
-                ryanShots[10] -= arrowsLeft;
-            }
+            
+            ryanInfo[idx] -= left;
             return;
+        } else {
+            // 해당 과녁판에서 라이언이 점수를 얻기 위해 필요한 화살 수
+            const arrowToWin = info[idx] + 1;
+            if(left >= arrowToWin) {
+                ryanInfo[idx] = arrowToWin;
+                dfs(left - arrowToWin, idx + 1);
+                // 백트래킹
+                ryanInfo[idx] = 0;
+            }
+            // 백트래킹
+            ryanInfo[idx] = 0;
+            dfs(left, idx + 1);
         }
-
-        const arrowsToWin = info[idx] + 1;
-        if (arrowsLeft >= arrowsToWin) {
-            ryanShots[idx] = arrowsToWin;
-            dfs(idx + 1, arrowsLeft - arrowsToWin);
-            ryanShots[idx] = 0;
-        }
-
-        ryanShots[idx] = 0;
-        dfs(idx + 1, arrowsLeft);
     }
-
-    dfs(0, n);
     
-    return maxDiff > 0 ? bestResult : [-1];
+    dfs(n, 0);
+    
+    return maxDiff ? result : [-1];
 }
