@@ -1,89 +1,70 @@
 /**
- * 맨해튼 거리를 기반으로, 'r 우선' 규칙을 만족하는 유일한 경로를 생성합니다.
- * @returns {Array<Array<number>>} - 시간순 좌표 리스트 (첫 좌표 포함)
- */
-const generateUniqueShortestPath = (startX, startY, endX, endY) => {
-    let currR = startX;
-    let currC = startY;
-    const path = [[startX, startY]];
+* getShortestMoves: 최단 경로로 도착 포인트까지 이동 좌표를 초 단위로 반환
+* @param {number} startX: 출발 포인트 행
+* @param {number} startY: 출발 포인트 열
+* @param {number} endX: 도착 포인트 행
+* @param {number} endY: 도착 포인트 열
+* @returns number[][]: [[행, 열], [행, 열], ...] 형식의 2차원 배열
+*/
+const getShortestMoves = (startX, startY, endX, endY) => {
+    const moves = [[startX, startY]];
+    
+    let currX = startX, currY = startY;
 
-    while (currR !== endX || currC !== endY) {
-        // 1. r 좌표 조정 (r 우선 규칙)
-        if (currR !== endX) {
-            // endX가 더 크면 r 증가, 작으면 r 감소
-            currR += (endX > currR) ? 1 : -1;
-        } 
-        // 2. r 좌표 조정이 끝난 후 c 좌표 조정
-        else if (currC !== endY) {
-            // endY가 더 크면 c 증가, 작으면 c 감소
-            currC += (endY > currC) ? 1 : -1;
-        }
-
-        path.push([currR, currC]);
-    }
-    return path;
+    while(currX !== endX || currY !== endY) {
+        // r 좌표가 변하는 이동을 c 좌표가 변하는 이동보다 먼저 진행
+        if(currX !== endX) {
+            currX += currX < endX ? 1 : -1;
+        } else {
+            currY += currY < endY ? 1 : -1;
+        }
+        moves.push([currX, currY]);
+    }
+    
+    return moves;
 }
 
+
 const solution = (points, routes) => {
-    // ... (포인트 매핑, R, C 구하기 - 전처리 부분은 그대로 사용) ...
-    const pointMap = new Map();
-    points.forEach(([r, c], index) => { pointMap.set(index + 1, [r, c]); /* R, C 계산 */ });
+    let answer = 0;
 
-    // 시간별 로봇 위치 기록 Map
-    const robotLocationsByTime = new Map();
-    let maxTime = 0;
+    // 포인트 저장
+    const pointMap = new Map();
+    points.forEach((point, i) => pointMap.set(i + 1, [point[0], point[1]]));
 
-    for (const route of routes) {
-        let currentTime = 0;
-        
-        // 로봇의 첫 출발 위치는 0초에 기록됩니다.
-        let [currentR, currentC] = pointMap.get(route[0]);
-        const startKey = `${currentR}_${currentC}`;
-        robotLocationsByTime.set(0, (robotLocationsByTime.get(0) || []).concat(startKey));
-
-        for (let i = 0; i < route.length - 1; i++) {
-            const startPointNum = route[i];
-            const endPointNum = route[i + 1];
-
-            const [startX, startY] = pointMap.get(startPointNum);
-            const [endX, endY] = pointMap.get(endPointNum);
-            
-            // 맨해튼 거리를 이용한 경로 생성 (O(D) 복잡도)
-            // path는 첫 좌표와 마지막 좌표를 모두 포함합니다.
-            const path = generateUniqueShortestPath(startX, startY, endX, endY);
-
-            // 이전 경로의 끝 지점(path[0])은 이미 기록되었으므로 path.slice(1)부터 기록합니다.
-            const newSteps = path.slice(1); 
-            
-            for (const [r, c] of newSteps) {
-                currentTime++;
-                const coordKey = `${r}_${c}`;
-                
-                if (!robotLocationsByTime.has(currentTime)) {
-                    robotLocationsByTime.set(currentTime, []);
-                }
-                robotLocationsByTime.get(currentTime).push(coordKey);
-            }
-        }
-        maxTime = Math.max(maxTime, currentTime);
-    }
+    // 초단위로 로봇들의 이동 좌표를 저장할 Map 객체
+    const robotsLocationByTimes = new Map();
     
-    // ... (충돌 위험 계산 로직은 그대로 사용) ...
-    let answer = 0;
-    for (let t = 0; t <= maxTime; t++) {
-        const locations = robotLocationsByTime.get(t);
-        if (!locations) continue;
+    for(const route of routes) {
+        let currentTime = 0;
+        robotsLocationByTimes.set(currentTime, (robotsLocationByTimes.get(0) || []).concat([pointMap.get(route[0])]));
 
-        const locationCounts = new Map();
-        for (const loc of locations) {
-            locationCounts.set(loc, (locationCounts.get(loc) || 0) + 1);
-        }
+        for(let i = 0; i < route.length - 1; i++) {
+            const [startX, startY] = pointMap.get(route[i]);
+            const [endX, endY] = pointMap.get(route[i + 1]);
+            const moves = getShortestMoves(startX, startY, endX, endY).slice(1);
 
-        for (const count of locationCounts.values()) {
-            if (count >= 2) {
-                answer++;
-            }
-        }
-    }
-    return answer;
+            moves.forEach(move => {
+                currentTime++;
+                robotsLocationByTimes.set(currentTime, (robotsLocationByTimes.get(currentTime) || []).concat([move]));
+            })
+        }
+    }
+
+    for(let i = 0; i < robotsLocationByTimes.size; i++) {
+        const robotsLocations = robotsLocationByTimes.get(i);
+        const countMap = new Map();
+
+        for(const locations of robotsLocations) {
+            const str = JSON.stringify(locations);
+
+            countMap.set(str, (countMap.get(str) || 0) + 1);
+        }
+
+        for(const count of countMap.values()) {
+            answer += count >= 2 ? 1 : 0;
+        }
+    }
+
+    return answer;
 }
