@@ -1,10 +1,10 @@
 # [level 2] 교점에 별 만들기 - 87377 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/87377?language=javascript) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/87377) 
 
 ### 성능 요약
 
-메모리: 39.2 MB, 시간: 56.84 ms
+메모리: 40.5 MB, 시간: 57.69 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 10월 04일 23:56:34
+2025년 10월 07일 02:12:57
 
 ### 문제 설명
 
