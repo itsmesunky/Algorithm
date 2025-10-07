@@ -1,59 +1,61 @@
 /**
 * 문제 해결 시나리오
-* 1. line 배열을 순회하며 현재 원소와 나머지 원소들의 교점을 찾음(문제 내 공식 활용)
-* 2. 교점의 좌표 x와 y가 정수이면 배열에 저장
-* 3. x와 y의 최소/최대값을 찾아 격자판을 만들고, 교점인 지점에 '*' 찍기
+* 1. 두 직선 간 교점은 유일함
+* 2. 직선끼리의 교점 좌표(x, y 모두 정수)를 모두 구한 뒤, 최소/최대 정수값으로 2차원 배열을 생성
+* 3. 교점에 '*' 표시
 */
 const solution = (line) => {
-    // 교점 좌표를 저장할 배열
+    // 교점 좌표 저장 배열
     const points = [];
     
+    // 두 직선 간 교점 구하기
     for(let curr = 0; curr < line.length - 1; curr++) {
+        // 현재 직선
         const [A, B, E] = line[curr];
-        // 현재 원소와 나머지 원소들의 교점 찾기
+        
         for(let rest = curr + 1; rest < line.length; rest++) {
             const [C, D, F] = line[rest];
             
             // 분모
             const denominator = (A * D) - (B * C);
             
-            // AD - BC = 0인 경우 두 직선은 평행 또는 일치
+            // 두 직선이 평행하거나 일치하는 경우
             if(!denominator) continue;
             
-            // 분자
-            const xMolecule = (B * F) - (E * D);
-            const yMolecule = (E * C) - (A * F);
+            // x, y 좌표의 분자
+            const xNumerator = (B * F) - (E * D);
+            const yNumerator = (E * C) - (A * F);
             
-            // x와 y가 정수가 되는지 판별
-            // xMolecule, yMolecule 둘 다 denominator로 나누어 떨어져야 함
-            if(!(xMolecule % denominator) && !(yMolecule % denominator)) {
-                const x = xMolecule / denominator;
-                const y = yMolecule / denominator;
+            // 좌표 정수 판별
+            if(xNumerator % denominator === 0 && yNumerator % denominator === 0) {
+                const x = xNumerator / denominator;
+                const y = yNumerator / denominator;
+                
                 points.push([x, y]);
             }
         }
     }
     
-    // x축 최소/최대값 찾기
-    points.sort((a, b) => a[0] - b[0]);
-    const [minX, maxX] = [points[0][0], points.at(-1)[0]];
+    // 최소/최대값 찾기
+    let minX = points[0][0], maxX = points[0][0];
+    let minY = points[0][1], maxY = points[0][1];
     
-    // y축 최소/최대값 찾기
-    points.sort((a, b) => a[1] - b[1]);
-    const [minY, maxY] = [points[0][1], points.at(-1)[1]];
-    
-    const C = maxX - minX + 1;
-    const R = maxY - minY + 1;
-    
-    const board = Array.from({length: R}, () => Array(C).fill('.'));
-    
-    // board에서 교점에 별 찍기
     for(const [x, y] of points) {
-        const col = x - minX;
-        const row = maxY - y;
-        
-        board[row][col] = '*';
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
     }
+    
+    // 2차원 배열 생성 및 교점에 별 그리기
+    const R = maxY - minY + 1;
+    const C = maxX - minX + 1;
+    const board = Array.from({length: R}, () => Array(C).fill('.'));
+    points.forEach(([x, y]) => {
+        const row = maxY - y;
+        const col = x - minX;
+        board[row][col] = '*';
+    });
     
     return board.map(arr => arr.join(''));
 }
