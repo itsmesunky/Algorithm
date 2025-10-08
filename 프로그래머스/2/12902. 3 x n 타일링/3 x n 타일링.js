@@ -12,5 +12,5 @@ const solution = (n) => {
         dp[i] = (4 * dp[i - 2] % MOD - dp[i - 4] + MOD) % MOD;
     }
     
-    return dp[n] % MOD;
+    return dp[n];
 }
