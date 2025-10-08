@@ -1,47 +1,16 @@
-/**
- * @param {number} n - 가로 길이 (3 x n 직사각형)
- * @returns {number} - 타일링 방법의 수 (1,000,000,007로 나눈 나머지)
- */
-function solution(n) {
-    // 1. 홀수일 때 예외 처리
-    if (n % 2 !== 0) {
-        return 0;
-    }
-
-    const MOD = 1000000007;
-    // DP 테이블 정의: dp[i]는 3 x i 직사각형을 채우는 경우의 수
-    // n이 짝수일 때만 필요하므로, dp 배열은 n/2 + 1 크기로 효율적으로 사용하거나,
-    // n 크기 그대로 사용하되 홀수 인덱스는 0으로 처리할 수 있습니다.
-    // 여기서는 n의 절반(idx = n/2)까지만 사용하는 방식으로 최적화합니다.
-    const idx = n / 2;
-    // dp[k]는 3 x (2k)를 채우는 경우의 수를 저장
-    // dp[0]: 3 x 0 (빈 공간)을 채우는 방법 -> 1가지 (아무것도 안 함)
-    // dp[1]: 3 x 2를 채우는 방법 -> 3가지
+const solution = (n) => {
+    // n이 홀수인 경우, 2 x 1의 타일로 바닥을 가득 채울 수 없음
+    if(n % 2) return 0;
     
-    // DP 테이블 크기는 idx + 1
-    const dp = new Array(idx + 1).fill(0);
+    const MOD = 1_000_000_007;
     
-    // 기본값 설정
-    dp[0] = 1; 
-    dp[1] = 3; 
-
-    // 2. 점화식을 이용한 계산
-    for (let i = 2; i <= idx; i++) {
-        // 1. 기본형: dp[i-1] * 3
-        // 3 * (2(i-1))을 채운 후, 마지막 2칸을 3가지 기본 패턴으로 채우는 경우
-        let result = (dp[i - 1] * 3) % MOD;
-        
-        // 2. 특수형: 이전 짝수 길이 (2j)에서 나오는 새로운 특수 패턴 (항상 2가지)
-        // 3 * (2j)를 채운 후, 나머지 (2i - 2j) 공간을 특수 패턴으로 채우는 경우
-        // i=2일 때: dp[0] * 2
-        // i=3일 때: (dp[1] * 2) + (dp[0] * 2)
-        for (let j = 0; j < i - 1; j++) {
-            result = (result + dp[j] * 2) % MOD;
-        }
-
-        dp[i] = result;
+    const dp = Array(n + 1).fill(0);
+    dp[0] = 1;
+    dp[2] = 3;
+    
+    for(let i = 4; i <= n; i += 2) {
+        dp[i] = (dp[i - 2] * 4 % MOD - dp[i - 4] + MOD) % MOD;
     }
-
-    // dp[idx]는 3 x (2 * idx) = 3 x n의 경우의 수
-    return dp[idx];
+    
+    return dp[n];
 }
