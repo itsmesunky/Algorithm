@@ -9,8 +9,8 @@ const solution = (n) => {
     dp[2] = 3;
     
     for(let i = 4; i <= n; i += 2) {
-        dp[i] = (dp[i - 2] * 4 % MOD - dp[i - 4] + MOD) % MOD;
+        dp[i] = (4 * dp[i - 2] % MOD - dp[i - 4] + MOD) % MOD;
     }
     
-    return dp[n];
+    return dp[n] % MOD;
 }
