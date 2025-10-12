@@ -1,41 +1,42 @@
-function solution(n, left, right) {
-  const L = BigInt(left);
-  const R = BigInt(right);
+const solution = (n, l, r) => {
+    // 1-based 인덱스를 0-based 인덱스로 변환
+    const start = l - 1;
+    const end = r - 1;
 
-  function pow5(k) {
-    let res = 1n;
-    for (let i = 0; i < k; i++) res *= 5n;
-    return res;
-  }
-  const totalLen = pow5(n);
+    const getOneCount = (level, currentStart, currentEnd) => {
+        if (level === 0) {
+            return 1;
+        }
 
-  function countOnes(level, ql, qr) {
-    if (ql > qr) return 0n;
-    if (level === 0) {
-      return (ql <= 1n && 1n <= qr) ? 1n : 0n;
-    }
+        const len = currentEnd - currentStart + 1n;
+        const segmentLen = len / 5n;
 
-    const part = pow5(level - 1); // 각 부분의 길이
-    let ans = 0n;
+        let count = 0;
+        
+        for (let i = 0; i < 5; i++) {
+            if (i === 2) continue;
 
-    for (let i = 0; i < 5; i++) {
-      const segL = BigInt(i) * part + 1n;
-      const segR = BigInt(i + 1) * part;
-      if (segR < ql || segL > qr) continue; // 겹치지 않음
+            const nextStart = currentStart + segmentLen * BigInt(i);
+            const nextEnd = nextStart + segmentLen - 1n;
 
-      if (i === 2) continue;
+            if (nextEnd < start || nextStart > end) {
+                continue;
+            }
 
-      const childQl = (ql > segL) ? (ql - segL + 1n) : 1n;
-      const childQr = (qr < segR) ? (qr - segL + 1n) : (segR - segL + 1n);
+            if (nextStart >= start && nextEnd <= end) {
+                count += Math.pow(4, level - 1);
+                continue;
+            }
+            
+            count += getOneCount(
+                level - 1,
+                nextStart,
+                nextEnd,
+            );
+        }
 
-      ans += countOnes(level - 1, childQl, childQr);
-    }
+        return count;
+    };
 
-    return ans;
-  }
-
-  const result = countOnes(n, L, R);
-
-  if (result <= BigInt(Number.MAX_SAFE_INTEGER)) return Number(result);
-  return result.toString();
-}
+    return getOneCount(n, 0n, 5n ** BigInt(n) - 1n);
+};
