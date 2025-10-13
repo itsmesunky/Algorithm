@@ -1,70 +1,57 @@
 /**
- * @param {number} n n번째 유사 칸토어 비트열
- * @param {number} l 시작 인덱스 (1-based)
- * @param {number} r 끝 인덱스 (1-based)
- * @returns {number} l부터 r까지의 '1'의 개수
- */
+* 문제 해결 시나리오
+* 1. 각 레벨(A_N)의 비트열은 아래와 같음
+* - A_0: '1'
+* - A_1: '11011'
+* - A_2: `${A_1} ${A_1} 0 ${A_1} ${A_1}`
+* 1.1 즉, A_N: `${A_N-1} ${A_N-1} 0 ${A_N-1} ${A_N-1}` 형태의 5개의 세그먼트로 나눠짐
+* 2. l, r값을 각 세그먼트의 범위와 비교하여 아래 로직 수행
+* 2.1 세그먼트의 시작 인덱스가 r값보다 크거나 끝 인덱스가 l값보다 작으면 다음 세그먼트 탐색
+* 2.2 세그먼트의 시작 인덱스가 l값보다 크거나 같고, 끝 인덱스가 r값보다 작거나 같으면 해당 세그먼트에서 '1'의 개수를 셈
+* 2.3 2.1, 2.2가 아니면 해당 세그먼트에서 일부분만 겹치기 때문에 겹치는 부분에서 '1'의 개수를 셈
+*/
 const solution = (n, l, r) => {
-    // 1-based 인덱스를 0-based 인덱스로 변환
-    const start = l - 1;
-    const end = r - 1;
-
+    // 0-based
+    const start = l - 1, end = r - 1;
+    
     /**
-     * @param {number} level 현재 비트열의 n 값 (A_n)
-     * @param {bigint} currentStart 현재 A_level이 시작하는 0-based 전역 인덱스
-     * @param {bigint} currentEnd 현재 A_level이 끝나는 0-based 전역 인덱스
-     * @returns {number} 현재 A_level 내에서 [start, end] 범위에 포함된 '1'의 개수
-     */
+    * getOneCount: 해당 세그먼트에 '1'이 몇 개 존재하는지 반환해주는 함수
+    * @param {number} level: 현재 비트열의 레벨
+    * @param {number} currentStart: 시작 위치
+    * @param {number} currentEnd: 종료 위치
+    * @returns {number}: 1의 개수
+    */
     const getOneCount = (level, currentStart, currentEnd) => {
-        // 1. 기저 조건: n=0일 때 (A_0 = "1")
-        if (level === 0) {
-            // A_0은 항상 '1'이므로, 범위에 포함되면 1 반환
-            return 1;
-        }
-
-        // 현재 비트열 A_level의 길이
-        // 5^level은 매우 커질 수 있으므로 BigInt 사용
+        if(level === 0) return 1;
+        
         const len = currentEnd - currentStart + 1;
+        // 몇 개의 세그먼트로 나눠지는지 확인
         const segmentLen = len / 5;
-
+        
         let count = 0;
-
-        // A_level은 (A_{level-1}, A_{level-1}, 00000, A_{level-1}, A_{level-1})로 구성됨
-        for (let i = 0; i < 5; i++) {
-            // i=2, 즉 세 번째 구역은 모두 0이므로 건너뛴다.
-            if (i === 2) continue;
-
-            const nextStart = currentStart + segmentLen * i;
+        
+        for(let i = 0; i < 5; i++) {
+            if(i === 2) continue;
+            
+            // 현재 세그먼트의 시작과 끝
+            const nextStart = currentStart + (i * segmentLen);
             const nextEnd = nextStart + segmentLen - 1;
-
-            // 2. 가지치기 (현재 구역이 목표 범위 [start, end]와 전혀 겹치지 않으면 무시)
-            if (nextEnd < start || nextStart > end) {
-                continue;
-            }
-
-            // 3. 포함 관계 확인 및 재귀 호출
-
-            // 3-A. 현재 구역이 목표 범위에 완전히 포함되는 경우
-            // 예: start=10, end=20, nextStart=12, nextEnd=15
-            if (nextStart >= start && nextEnd <= end) {
-                // 이 구역(A_{level-1}) 전체의 1의 개수를 구함
-                // A_k의 1의 개수는 4^(k) 이다.
+            
+            // l과 r을 이용하여 범위 체크
+            if(nextStart > end || nextEnd < start) continue;
+            
+            // 세그먼트가 찾고자 하는 범위 안에 포함일 시
+            if(nextStart >= start && nextEnd <= end) {
                 count += Math.pow(4, level - 1);
                 continue;
             }
-
-            // 3-B. 현재 구역과 목표 범위가 부분적으로 겹치는 경우
-            // 재귀 호출: 겹치는 부분만 범위로 좁혀서 다음 레벨로 이동
-            count += getOneCount(
-                level - 1,
-                nextStart,
-                nextEnd,
-            );
+            
+            // 겹치는 부분의 '1'의 개수만 세기
+            count += getOneCount(level - 1, nextStart, nextEnd);
         }
-
+        
         return count;
-    };
-
-    // 초기 호출: A_n 전체 (0부터 5^n - 1) 내에서 [start, end] 범위의 1의 개수를 구한다.
-    return getOneCount(n, 0, 5 ** n - 1);
-};
+    }
+    
+    return getOneCount(n, 0, (5 ** n) - 1);
+}
