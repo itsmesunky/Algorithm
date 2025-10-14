@@ -1,34 +1,33 @@
-function solution(m, n, startX, startY, balls) {
-  const results = [];
-
-  for (const [ballX, ballY] of balls) {
-    let minDist = Infinity;
-
-    const mirrors = [
-      [ballX, -ballY],       // 아래쪽 반사
-      [ballX, 2 * n - ballY],// 위쪽 반사
-      [-ballX, ballY],       // 왼쪽 반사
-      [2 * m - ballX, ballY] // 오른쪽 반사
-    ];
-
-    for (const [mirrorX, mirrorY] of mirrors) {
-      if (startX === ballX) {
-        if (startY < ballY && mirrorY > ballY) continue;
-        if (startY > ballY && mirrorY < ballY) continue;
-      }
-      if (startY === ballY) {
-        if (startX < ballX && mirrorX > ballX) continue;
-        if (startX > ballX && mirrorX < ballX) continue;
-      }
-
-      const dist =
-        (startX - mirrorX) ** 2 + (startY - mirrorY) ** 2;
-
-      minDist = Math.min(minDist, dist);
+const solution = (m, n, startX, startY, balls) => {
+    const result = [];
+    
+    for(const [ballX, ballY] of balls) {
+        // 최소 거리
+        let minDist = Number.MAX_SAFE_INTEGER;
+        
+        // 위, 아래, 왼쪽, 오른쪽 기준 목표점 반사 좌표
+        const mirrors = [[ballX, 2 * n - ballY], [ballX, -ballY], [-ballX, ballY], [2 * m - ballX, ballY]];
+        
+        for(const [mirrorX, mirrorY] of mirrors) {
+            // X축이 동일할 때
+            if(startX === mirrorX) {
+                if(startY < ballY && mirrorY > ballY) continue;
+                if(startY > ballY && mirrorY < ballY) continue;
+            }
+            // Y축이 동일할 때
+            if(startY === mirrorY) {
+                if(startX < ballX && mirrorX > ballX) continue;
+                if(startX > ballX && mirrorX < ballX) continue;
+            }
+            
+            // 목표점과 출발점의 유클리드 거리 제곱 값
+            const dist = (mirrorX - startX) ** 2 + (mirrorY - startY) ** 2;
+            
+            minDist = Math.min(minDist, dist);
+        }
+        
+        result.push(minDist);
     }
-
-    results.push(minDist);
-  }
-
-  return results;
+    
+    return result;
 }
