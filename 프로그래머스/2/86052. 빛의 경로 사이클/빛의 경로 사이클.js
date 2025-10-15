@@ -1,54 +1,52 @@
-function solution(grid) {
+const solution = (grid) => {
+    const result = [];
+    
     const R = grid.length;
     const C = grid[0].length;
-    // [row][col][direction]: 해당 방향으로 해당 칸을 방문했는지 여부
-    const visited = Array.from({ length: R }, () => 
-        Array.from({ length: C }, () => Array(4).fill(false))
-    );
-    const dr = [-1, 0, 1, 0]; // 상, 우, 하, 좌
-    const dc = [0, 1, 0, -1];
-    const answer = [];
+    
+    const visited = Array.from({length: R}, () => 
+                              Array.from({length: C}, () => 
+                                        Array(4).fill(false)));
+    
+    // 상, 우, 하, 좌 순으로 정의
+    const dirs = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+    
+    const getCycleLength = (row, col, dir) => {
+        let count = 0;
+        let currR = row;
+        let currC = col;
+        let currD = dir;
 
-    // 모든 칸과 모든 방향에 대해 탐색 시작
-    for (let r = 0; r < R; r++) {
-        for (let c = 0; c < C; c++) {
-            for (let d = 0; d < 4; d++) {
-                if (!visited[r][c][d]) {
-                    // 방문하지 않은 새로운 경로가 있다면 사이클 탐색 시작
-                    const cycleLength = getCycleLength(r, c, d, R, C, grid, dr, dc, visited);
-                    answer.push(cycleLength);
+        while(!visited[currR][currC][currD]) {
+            visited[currR][currC][currD] = true;
+            count++;
+            
+            const char = grid[currR][currC];
+            
+            if(char === 'L') {
+                currD = (currD + 3) % 4;
+            } else if(char === 'R') {
+                currD = (currD + 1) % 4;
+            }
+            
+            const [dr, dc] = dirs[currD];
+            
+            currR = (currR + dr + R) % R;
+            currC = (currC + dc + C) % C;
+        }
+        
+        return count;
+    }
+    
+    for(let row = 0; row < R; row++) {
+        for(let col = 0; col < C; col++) {
+            for(let dir = 0; dir < 4; dir++) {
+                if(!visited[row][col][dir]) {
+                    result.push(getCycleLength(row, col, dir));
                 }
             }
         }
     }
-    return answer.sort((a, b) => a - b);
-}
-
-// 하나의 사이클 길이를 계산하는 함수 (getCycleLength)
-function getCycleLength(r, c, d, R, C, grid, dr, dc, visited) {
-    let count = 0;
-    let currR = r;
-    let currC = c;
-    let currD = d;
-
-    while (!visited[currR][currC][currD]) {
-        // 1. 현재 (위치, 방향) 방문 처리
-        visited[currR][currC][currD] = true;
-        count++;
-
-        // 2. 방향 전환 (L, R, S)
-        const cell = grid[currR][currC];
-        if (cell === 'L') {
-            currD = (currD + 3) % 4; // 좌회전
-        } else if (cell === 'R') {
-            currD = (currD + 1) % 4; // 우회전
-        }
-        // 'S'는 직진이므로 currD 유지
-
-        // 3. 다음 칸으로 이동 (경계 처리 포함)
-        currR = (currR + dr[currD] + R) % R;
-        currC = (currC + dc[currD] + C) % C;
-    }
-
-    return count;
+    
+    return result.sort((a, b) => a - b);
 }
