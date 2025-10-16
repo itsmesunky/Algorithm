@@ -14,10 +14,11 @@ const solution = (n, computers) => {
     });
     
     const dfs = (idx) => {
+        visited[idx] = true;
+        
         for(let i = 0; i < graph[idx].length; i++) {
             const node = graph[idx][i];
             if(!visited[node]) {
-                visited[node] = true;
                 dfs(node);
             }
         }
@@ -26,7 +27,6 @@ const solution = (n, computers) => {
     for(let i = 1; i < graph.length; i++) {
         if(!visited[i]) {
             answer++;
-            visited[i] = true;
             dfs(i);
         }
     }
