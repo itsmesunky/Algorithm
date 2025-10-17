@@ -1,33 +1,26 @@
 const solution = (n, computers) => {
     let answer = 0;
     
-    const graph = Array.from({length: n + 1}, () => []);
-    const visited = Array(n + 1).fill(false);
-    
-    computers.forEach((computer, i) => {
-        computer.forEach((num, j) => {
-            if(i < j && num) {
-                graph[i + 1].push(j + 1);
-                graph[j + 1].push(i + 1);
-            }
-        })
-    });
+    const visited = Array(n).fill(false);
     
     const dfs = (idx) => {
         visited[idx] = true;
         
-        for(let i = 0; i < graph[idx].length; i++) {
-            const node = graph[idx][i];
-            if(!visited[node]) {
-                dfs(node);
-            }
+        for(let i = 0; i < computers[idx].length; i++) {
+            if(!visited[i] && computers[idx][i]) dfs(i);
         }
     }
     
-    for(let i = 1; i < graph.length; i++) {
+    for(let i = 0; i < computers.length; i++) {
         if(!visited[i]) {
+            visited[i] = true;
             answer++;
-            dfs(i);
+            
+            for(let j = i + 1; j < computers[i].length; j++) {
+                if(!visited[j] && computers[i][j]) {
+                    dfs(j);
+                }
+            }
         }
     }
     
