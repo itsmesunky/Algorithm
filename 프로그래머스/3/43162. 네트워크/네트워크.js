@@ -6,7 +6,7 @@ const solution = (n, computers) => {
     const dfs = (idx) => {
         visited[idx] = true;
         
-        for(let i = 0; i < computers[idx].length; i++) {
+        for(let i = 0; i < n; i++) {
             if(!visited[i] && computers[idx][i]) dfs(i);
         }
     }
@@ -15,12 +15,7 @@ const solution = (n, computers) => {
         if(!visited[i]) {
             visited[i] = true;
             answer++;
-            
-            for(let j = i + 1; j < computers[i].length; j++) {
-                if(!visited[j] && computers[i][j]) {
-                    dfs(j);
-                }
-            }
+            dfs(i);
         }
     }
     
