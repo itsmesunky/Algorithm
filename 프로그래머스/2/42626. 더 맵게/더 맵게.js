@@ -15,6 +15,10 @@ class MinHeap {
         return idx * 2 + 2;
     }
     
+    peek() {
+        return this.heap[0];
+    }
+    
     size() {
         return this.heap.length;
     }
@@ -83,11 +87,9 @@ const solution = (scoville, K) => {
         minHeap.push(num);
     }
     
-    while(minHeap.size() >= 2) {
+    while(minHeap.peek() < K && minHeap.size() >= 2) {
         const minScovile1 = minHeap.pop();
         const minScovile2 = minHeap.pop();
-        
-        if(minScovile1 >= K) break;
         
         count++;
         
@@ -95,5 +97,5 @@ const solution = (scoville, K) => {
         minHeap.push(result);
     }
     
-    return minHeap.size() === 1 && minHeap.pop() < K ? -1 : count;
+    return minHeap.size() === 1 && minHeap.peek() < K ? -1 : count;
 }
