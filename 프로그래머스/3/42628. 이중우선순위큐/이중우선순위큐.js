@@ -114,56 +114,41 @@ const solution = (operations) => {
     const minHeap = new MinHeap();
     const maxHeap = new MaxHeap();
     
-    const counts = new Map();
-    let size = 0;
-
-    const syncAndClean = (heap, counts) => {
-        while (heap.size() > 0 && counts.get(heap.peek()) === 0) {
+    // 핵심(두 heap 내 무효한 값 삭제 로직)
+    const map = new Map();
+    const syncAndClear = (heap) => {
+        while(heap.size() && map.get(heap.peek()) === 0) {
             heap.pop();
         }
-    };
-
-    for (const operation of operations) {
-        const [command, dataStr] = operation.split(' ');
-        const num = parseInt(dataStr);
-
-        if (command === 'I') {
-            minHeap.push(num);
-            maxHeap.push(num);
-            counts.set(num, (counts.get(num) || 0) + 1);
-            size++;
-        } else if (command === 'D') {
-            if (size === 0) continue;
-
-            let valueToRemove;
-
-            if (num === 1) {
-                syncAndClean(maxHeap, counts);
-                
-                if (maxHeap.size() > 0) {
-                    valueToRemove = maxHeap.pop();
-                }
-            } else if (num === -1) {
-                syncAndClean(minHeap, counts);
-                
-                if (minHeap.size() > 0) {
-                    valueToRemove = minHeap.pop();
-                }
-            }
-
-            if (valueToRemove !== undefined) {
-                counts.set(valueToRemove, counts.get(valueToRemove) - 1);
-                size--;
-            }
-        }
-    }
-
-    if (size === 0) {
-        return [0, 0];
     }
     
-    syncAndClean(maxHeap, counts);
-    syncAndClean(minHeap, counts);
-
-    return [maxHeap.peek(), minHeap.peek()];
+    for(const operation of operations) {
+        const [command, data] = operation.split(" ");
+        const num = +data;
+        
+        if(command === 'I') {
+            minHeap.push(num);
+            maxHeap.push(num);
+            map.set(num, (map.get(num) || 0) + 1);
+        } else {
+            if(!minHeap.size() || !maxHeap.size()) continue;
+            
+            let valueToRemove;
+            
+            if(num === 1) {
+                syncAndClear(maxHeap);
+                valueToRemove = maxHeap.pop();
+            } else {
+                syncAndClear(minHeap);
+                valueToRemove = minHeap.pop();
+            }
+            
+            map.set(valueToRemove, map.get(valueToRemove) - 1);
+        }
+    }
+    
+    syncAndClear(maxHeap);
+    syncAndClear(minHeap);
+    
+    return !minHeap.size() ? [0, 0] : [maxHeap.peek(), minHeap.peek()];
 }
