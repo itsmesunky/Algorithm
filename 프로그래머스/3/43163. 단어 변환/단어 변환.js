@@ -1,37 +1,46 @@
+/**
+* 문제 해결 시나리오
+* 1. 현재 단어에서 변경이 가능한 단어 탐색
+* → 즉, 현재 단어와 다음 단어간 다른 알파벳의 개수가 1개인 경우
+* 2. 해당 단어를 큐에 삽입 후 1번 과정 반복
+*/
 const solution = (begin, target, words) => {
-    // 두 문자열 사이 다른 문자의 갯수가 1인지 판단해주는 헬퍼 함수
-    const isDiffCountOne = (str1, str2) => {
+    /**
+    * isDiffCountOne: 두 단어 사이간 다른 알파벳의 개수가 1개인지 판별해주는 헬퍼 함수
+    * @param {string} a - 첫 번째 단어
+    * @param {string} b - 두 번째 단어
+    * @returns {boolean} - 다른 알파벳의 개수가 1개인 경우 true, 그렇지 않으면 false
+    */
+    const isDiffCountOne = (a, b) => {
         let count = 0;
         
-        const arr1 = [...str1].sort((a, b) => a - b);
-        const arr2 = [...str2].sort((a, b) => a - b);
-        
-        for(let i = 0; i < arr1.length; i++) {
+        for(let i = 0; i < a.length; i++) {
             if(count > 1) return false;
-            if(arr1[i] !== arr2[i]) count++;
+            if(a[i] !== b[i]) count++;
         }
         
         return count > 1 ? false : true;
     }
     
-    const BFS = (currStr, count) => {
-        // 특정 문자열 방문 여부 저장 Map
+    // BFS로 인접 단어 탐색
+    const bfs = (begin) => {
         const visited = new Map(words.map(word => [word, false]));
-        const queue = [];
-        queue.push([currStr, count]);
+        const queue = [[begin, 0]];
+        visited.set(begin, true);
         
         while(queue.length) {
-            const [str, cnt] = queue.shift();
+            const [currWord, count] = queue.shift();
             
-            if(str === target) {
-                return cnt;
+            if(currWord === target) {
+                return count;
             }
             
             for(let i = 0; i < words.length; i++) {
-                const nextString = words[i];
-                if(!visited.get(nextString) && isDiffCountOne(str, nextString)) {
-                    visited.set(nextString, true);
-                    queue.push([nextString, cnt + 1]);
+                const nextWord = words[i];
+                
+                if(!visited.get(nextWord) && isDiffCountOne(currWord, nextWord)) {
+                    visited.set(nextWord, true);
+                    queue.push([nextWord, count + 1]);
                 }
             }
         }
@@ -39,5 +48,6 @@ const solution = (begin, target, words) => {
         return 0;
     }
     
-    return BFS(begin, 0);
+    return bfs(begin);
 }
+
