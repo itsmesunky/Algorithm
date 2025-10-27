@@ -1,35 +1,46 @@
 /**
- * 프로그래머스 섬 연결하기 - LV3
- * 최소 신장 트리 (Kruskal 알고리즘 + Union-Find)
- */
-
+* 문제 해결 시나리오
+* 1. 최소 비용으로 모든 노드를 연결
+* 2. Kruskal + Union-Find 알고리즘 활용
+*/
 const solution = (n, costs) => {
-  // 1. 간선 비용 기준 오름차순 정렬
-  costs.sort((a, b) => a[2] - b[2]);
-
-  // 2. 각 노드의 부모 노드를 자기 자신으로 초기화
-  const parent = Array.from({ length: n }, (_, i) => i);
-
-  // 3. find 함수 (경로 압축)
-  const find = (x) => {
-    if (parent[x] === x) return x;
-    return (parent[x] = find(parent[x]));
-  };
-
-  // 4. union 함수
-  const union = (a, b) => {
-    const rootA = find(a);
-    const rootB = find(b);
-    if (rootA === rootB) return false; // 이미 같은 집합
-    parent[rootB] = rootA; // 병합
-    return true;
-  };
-
-  // 5. 최소 비용 계산
-  let total = 0;
-  for (const [a, b, cost] of costs) {
-    if (union(a, b)) total += cost; // 사이클이 생기지 않는 경우에만 추가
-  }
-
-  return total;
-};
+    // 각 노드의 부모 노드를 저장하기 위한 배열
+    const parent = Array.from({length: n}, (_, idx) => idx);
+    
+    // 부모 노드 찾기 - recursive
+    const getParent = (node) => {
+        const result = parent[node];
+        if(result === node) return result;
+        return parent[node] = getParent(result);
+    }
+    
+    // 부모의 값이 더 작은 쪽으로 부모 합침
+    const unionParent = (node1, node2) => {
+        const rootA = getParent(node1);
+        const rootB = getParent(node2);
+        
+        if (rootA < rootB) {
+            parent[rootB] = rootA;
+        } else {
+            parent[rootA] = rootB;
+        }
+    }
+    
+    // 같은 부모, 즉 사이클을 그리는지 확인
+    const isCycle = (a, b) => getParent(a) === getParent(b);
+    
+    // 간선 비용 오름차순 정렬
+    costs.sort((a, b) => a[2] - b[2]);
+    
+    let answer = 0;
+    for(const [a, b, c] of costs) {
+        // 연결된 그래프인지 확인
+        if(isCycle(a, b)) continue;
+        // 연결 및 부모 합침
+        unionParent(a, b);
+        // 비용 누적
+        answer += c;
+    }
+    
+    return answer;
+}
