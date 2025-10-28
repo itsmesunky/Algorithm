@@ -11,27 +11,23 @@ const solution = (n, roads, sources, destination) => {
         graph[b].push(a);
     }
     
-    return sources.map(source => {
-        // source로부터 각 노드까지의 거리 저장 배열
-        const dist = Array(n + 1).fill(-1);
-        
-        // 자기 자신과의 거리는 0으로 초기화
-        dist[source] = 0;
-        
-        let head = 0;
-        const queue = [source];
-        while(head < queue.length) {
-            if(dist[destination] !== -1) break;
-            
-            const node = queue[head++];
-            for(const next of graph[node]) {
-                if(dist[next] === -1) {
-                    dist[next] = dist[node] + 1;
-                    queue.push(next);
-                }
+    // destination에서 source[i] 까지의 거리 저장
+    const dist = Array(n + 1).fill(-1);
+
+    // 자기 자신과의 거리는 0으로 초기화
+    dist[destination] = 0;
+
+    let head = 0;
+    const queue = [destination];
+    while(head < queue.length) {
+        const node = queue[head++];
+        for(const next of graph[node]) {
+            if(dist[next] === -1) {
+                dist[next] = dist[node] + 1;
+                queue.push(next);
             }
         }
-        
-        return dist[destination];
-    });
+    }
+    
+    return sources.map(source => dist[source]);
 }
