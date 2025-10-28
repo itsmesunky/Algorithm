@@ -1,30 +1,16 @@
-function solution(sequence) {
-    const N = sequence.length;
-    
-    const arr1 = []; 
-    const arr2 = [];
-
-    for (let i = 0; i < N; i++) {
-        const sign1 = (i % 2 === 0) ? 1 : -1;
-        
-        arr1.push(sequence[i] * sign1);
-        arr2.push(sequence[i] * (-sign1));
-    }
-
-    const findMaxSubarraySum = (arr) => {
-        let currentMax = 0;
-        let overallMax = -Infinity;
-
-        for (const num of arr) {
-            currentMax = Math.max(num, currentMax + num);
-            overallMax = Math.max(overallMax, currentMax);
+const solution = (sequence) => {
+    // 카데인 알고리즘으로 부분 수열의 최대합 구하기
+    const getMaxSubArray = (init) => {
+        let toggle = init;
+        let currSum = 0, maxSum = 0;
+        for(let i = 0; i < sequence.length; i++) {
+            const value = sequence[i] * toggle;
+            currSum = Math.max(currSum + value, value);
+            maxSum = Math.max(currSum, maxSum);
+            toggle *= -1;
         }
-        
-        return overallMax;
-    };
+        return maxSum;
+    }
     
-    const max1 = findMaxSubarraySum(arr1);
-    const max2 = findMaxSubarraySum(arr2);
-
-    return Math.max(max1, max2);
+    return Math.max(getMaxSubArray(1), getMaxSubArray(-1));
 }
