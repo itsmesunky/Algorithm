@@ -1,8 +1,7 @@
 const solution = (n, times) => {
     let answer = 0;
     
-    times.sort((a, b) => a - b);
-    let min = 1, max = times.at(-1) * n;
+    let min = 1, max = Number.MAX_SAFE_INTEGER;
     
     while(min <= max) {
         let sum = 0;
