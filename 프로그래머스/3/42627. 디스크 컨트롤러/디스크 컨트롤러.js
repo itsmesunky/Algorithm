@@ -29,7 +29,7 @@ class MinHeap {
     }
     
     pop() {
-        if(this.heap.length === 0) return null;
+        if(this.heap.length === 0) return;
         if(this.heap.length === 1) return this.heap.pop();
         
         const root = this.heap[0];
@@ -43,7 +43,6 @@ class MinHeap {
         
         while(idx > 0) {
             const parent = this.getParentIndex(idx);
-            
             if(this.heap[idx][1] < this.heap[parent][1]) {
                 this.swap(idx, parent);
                 idx = parent;
@@ -62,7 +61,6 @@ class MinHeap {
             const right = this.getRightChildIndex(idx);
             
             let smaller = left;
-            
             if(right < len && this.heap[right][1] < this.heap[left][1]) {
                 smaller = right;
             }
@@ -77,38 +75,36 @@ class MinHeap {
     }
 }
 
+
 const solution = (jobs) => {
-    const L = jobs.length;
+    const length = jobs.length;
     
+    // jobs 요청 시각 기준 오름차순 정렬
     jobs.sort((a, b) => a[0] - b[0]);
     
-    let totalReturnTimes = 0; // 누적 응답 시간 (완료 시간 - 요청 시간)
-    let currentTime = 0;      // 현재까지 흐른 시간 (디스크가 현재 시각)
-    let jobIndex = 0;         // jobs 배열에서 다음에 힙에 넣을 작업 인덱스
-    let jobsDone = 0;         // 완료된 작업 수
+    let idx = 0;                // jobs 배열 포인터
+    let totalTakesTimes = 0;    // 현재까지 흐른 시간
+    let totalReturnTimes = 0;   // 누적 반환 시간
     
-    const pq = new MinHeap(); // 소요 시간 기준으로 정렬되는 최소 힙 (Priority Queue)
+    // 대기 큐
+    const pq = new MinHeap();
     
-    while (jobsDone < L) {
-        while (jobIndex < L && jobs[jobIndex][0] <= currentTime) {
-            pq.push(jobs[jobIndex]);
-            jobIndex++;
+    while(idx < length || pq.size()) {
+        // 🔥 다른 작업 진행 중, 요청이 들어온 작업들을 큐에 삽입
+        while(idx < length && jobs[idx][0] <= totalTakesTimes) {
+            pq.push(jobs[idx]);
+            idx++;
         }
         
-        if (pq.size() > 0) {
-            const [reqTimes, takeTimes] = pq.pop();
-            
-            currentTime += takeTimes;
-            
-            totalReturnTimes += (currentTime - reqTimes);
-            jobsDone++;
-            
+        if(pq.size()) { // 대기 큐에 작업이 있는 경우
+            const [req, duration] = pq.pop();           // 큐에서 작업을 꺼내서 실행
+            totalTakesTimes += duration;                // 현재까지 흐른 시간 누적
+            totalReturnTimes += totalTakesTimes - req   // 반환시간 누적
         } else {
-            if (jobIndex < L) {
-                currentTime = jobs[jobIndex][0];
-            } 
+            totalTakesTimes = jobs[idx][0];
         }
     }
     
-    return Math.floor(totalReturnTimes / L);
+    
+    return Math.floor(totalReturnTimes / length);
 }
