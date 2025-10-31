@@ -11,18 +11,12 @@ const solution = (enroll, referral, seller, amount) => {
         const toReferrer = Math.floor(money * 0.1);
         const toSeller = money - toReferrer;
         
-        if(recommender === '-') {
-            map.set(name, [recommender, total + (toReferrer < 1 ? money : toSeller)]);
-            return;
-        } else {
-            if(toReferrer < 1) {
-                map.set(name, [recommender, total + money]);
-                return;
-            } else {
-                map.set(name, [recommender, total + toSeller]);
-                dfs(recommender, toReferrer);    
-            }
-        }
+        const flag = toReferrer < 1;
+        
+        map.set(name, [recommender, total + (flag ? money : toSeller)]);
+        
+        if(recommender === '-' || flag) return;
+        dfs(recommender, toReferrer);
     };
     
     seller.forEach((name, i) => {
