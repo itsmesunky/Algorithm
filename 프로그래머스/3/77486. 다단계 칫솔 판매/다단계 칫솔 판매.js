@@ -5,7 +5,7 @@ const solution = (enroll, referral, seller, amount) => {
         map.set(name, [referral[i], 0]);
     });
     
-    const dfs = (name, money) => {
+    const distribute = (name, money) => {
         const [recommender, total] = map.get(name);
         
         const toReferrer = Math.floor(money * 0.1);
@@ -16,11 +16,11 @@ const solution = (enroll, referral, seller, amount) => {
         map.set(name, [recommender, total + (flag ? money : toSeller)]);
         
         if(recommender === '-' || flag) return;
-        dfs(recommender, toReferrer);
+        distribute(recommender, toReferrer);
     };
     
     seller.forEach((name, i) => {
-        dfs(name, amount[i] * 100);
+        distribute(name, amount[i] * 100);
     });
     
     return enroll.map(name => map.get(name)[1]);
