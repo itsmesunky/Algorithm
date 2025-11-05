@@ -1,11 +1,10 @@
 /**
 * 문제 해결 아이디어
-* 1. 특정 구간에 동일값 동일연산을 빠르게 처리 하기 위해 imos 알고리즘 사용
-* 2. imos[board.length][board[0].length + 1]의 imos 배열 생성 및 0으로 초기화 
-* 3. skill을 순회하며 imos 배열에 imos 알고리즘으로 값을 갱신
-* 4. imos 배열 정리(board[r][j]에 더할 값) 후 imos 배열 순회하며 board[i][j] 갱신
-* 5. 갱신된 board[i][j] 값이 1 이상이면 파괴되지 않은 건물이므로 answer 증가
-* 6. answer 반환
+* 1. 특정 구간 내 같은 값 같은 연산 처리를 위해 imos 알고리즘 적용
+* 2. board를 기준으로 imos 배열 생성(row + 1, col + 1)
+* 3. skill 순회하면서 imos 각 원소를 imos 알고리즘 계산 값으로 갱신
+* 4. imos 배열 정리
+* 5. board의 각 원소를 imos의 각 원소값으로 더하여 1 이상인 경우 answer 증가
 */
 const solution = (board, skill) => {
     let answer = 0;
@@ -13,35 +12,36 @@ const solution = (board, skill) => {
     const R = board.length;
     const C = board[0].length;
     
-    // imos 배열 생성 및 0으로 초기화 
     const imos = Array.from({ length: R + 1 }, () => Array(C + 1).fill(0));
     
     for(const [type, r1, c1, r2, c2, degree] of skill) {
-        const effect = (type === 1 ? -degree : degree);
-
-        imos[r1][c1] += effect;
-        imos[r1][c2 + 1] -= effect;
-        imos[r2 + 1][c1] -= effect;
-        imos[r2 + 1][c2 + 1] += effect;
+        const effect = type === 1 ? -degree : degree;
+        
+        imos[r1][c1] += effect; // 시작구간
+        imos[r1][c2 + 1] -= effect; // 종료구간 1
+        imos[r2 + 1][c1] -= effect; // 종료구간 2
+        imos[r2 + 1][c2 + 1] += effect; // 🔥보정 처리 구간
     }
     
-    for(let r = 0; r < R + 1; r++) {
-        for(let c = 1; c < C + 1; c++) {
-            imos[r][c] += imos[r][c - 1];
-        }
-    }
-    
-    for(let c = 0; c < C + 1; c++) {
-        for(let r = 1; r < R + 1; r++) {
-            imos[r][c] += imos[r - 1][c];
-        }
-    }
-    
+    // imos 정리 1. 가로 방향
     for(let row = 0; row < R; row++) {
+        for(let col = 1; col < C; col++) {
+            imos[row][col] += imos[row][col - 1];
+        }
+    }
+    
+    // imos 정리 2. 세로 방향
+    for(let col = 0; col < C; col++) {
+        for(let row = 1; row < R; row++) {
+            imos[row][col] += imos[row - 1][col];
+        }
+    }
+    
+    // board 순회하며 누적합으로 갱신
+    for(let row = 0; row < R; row++){
         for(let col = 0; col < C; col++) {
             board[row][col] += imos[row][col];
-            // 1 이상이면 파괴되지 않은 건물
-            if(board[row][col] > 0) answer++;
+            if(0 < board[row][col]) answer++;
         }
     }
     
