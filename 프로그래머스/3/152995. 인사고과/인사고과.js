@@ -1,35 +1,43 @@
 const solution = (scores) => {
-    let answer = 0;
-    
-    const [a, b] = scores[0];
-    const total = a + b; // 완호의 점수 합
-    
-    // 1. 점수합 내림차순 정렬
-    // 2. 근무 태도 점수 내림차순 정렬
-    // 3. 동료 평가 점수 내림차순 정렬
-    const totals = scores.map(([a, b], i) => [a, b, a + b, i])
-                        .sort((a, b) => b[2] - a[2] || b[0] - a[0] || b[1] - a[1]);
-    
-    // 각 사원이 인센티브를 받을 수 있는지 여부를 저장
-    const arr = Array(scores.length).fill(true);
-    
-    const idx = totals.findIndex(v => v[3] === 0);
-    
-    for(let i = 0; i <= idx; i++) {
-        const [c, d, e, f] = totals[i];
-        for(let j = i + 1; j <= idx; j++) {
-            const [g, h, k, l] = totals[j];
-            if(g < c && h < d) {
-                arr[l] = false;
-                if(!arr[0]) return -1;
+    const [wanhoA, wanhoB] = scores[0];
+    const wanhoTotal = wanhoA + wanhoB;
+    let maxB = 0; // 지금까지 등장한 동료 평가 점수(B)의 최댓값
+
+    // 1. 효율적인 정렬 (O(N log N))
+    // - 근무 태도 점수(A)는 내림차순 (wanhoA)
+    // - 동점일 경우, 동료 평가 점수(B)는 오름차순 (wanhoB)
+    scores.sort((a, b) => {
+        if (a[0] !== b[0]) {
+            return b[0] - a[0]; // A 내림차순
+        }
+        return a[1] - b[1]; // A가 같으면 B 오름차순
+    });
+
+    // 2. 인센티브 제외 대상 판별 및 완호 순위 계산 (O(N))
+    let rank = 1;
+
+    for (const [a, b] of scores) {
+        // 지금까지 등장한 B 점수의 최댓값 갱신
+        if (b > maxB) {
+            maxB = b;
+        }
+
+        // 인센티브 제외 조건: 현재 사원의 B 점수가 maxB보다 작다면, 
+        // 이 사원은 (A 점수가 같거나 높은) 다른 사원에게 두 점수 모두 밀리는 것
+        if (b < maxB) {
+            // 만약 완호가 인센티브 제외 대상이라면 -1 반환
+            if (a === wanhoA && b === wanhoB) {
+                return -1;
             }
+            // 인센티브 제외 대상이므로 순위 계산에서 제외
+            continue; 
+        }
+
+        // 인센티브 제외 대상이 아닌 사원들만 순위 계산에 참여
+        if (a + b > wanhoTotal) {
+            rank++;
         }
     }
     
-    for(let i = 0; i <= idx; i++) {
-        if(arr[totals[i][3]]) answer++;
-        if(totals[i][2] === total) break;
-    }
-    
-    return answer;
+    return rank;
 }
