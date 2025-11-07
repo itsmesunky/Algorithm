@@ -1,113 +1,31 @@
-class MinHeap {
-    constructor() {
-        this.heap = [];
-    }
-    
-    getParentIndex(i) {
-        return Math.floor((i - 1) / 2);
-    }
-    
-    getLeftChildIndex(i) {
-        return i * 2 + 1;
-    }
-    
-    getRightChildIndex(i) {
-        return i * 2 + 2;
-    }
-    
-    size() {
-        return this.heap.length;
-    }
-    
-    swap(a, b) {
-        [this.heap[a], this.heap[b]] = [this.heap[b], this.heap[a]];
-    }
-    
-    push(arr) {
-        this.heap.push(arr);
-        this.heapifyUp();
-    }
-    
-    pop() {
-        if(this.heap.length === 0) return undefined;
-        if(this.heap.length === 1) return this.heap.pop();
-        
-        const root = this.heap[0];
-        this.heap[0] = this.heap.pop();
-        this.heapifyDown();
-        return root;
-    }
-    
-    heapifyUp() {
-        let idx = this.heap.length - 1;
-        
-        while(idx > 0) {
-            const parent = this.getParentIndex(idx);
-            if(this.heap[parent][1] <= this.heap[idx][1]) break;
-            this.swap(idx, parent);
-            idx = parent;
-        }
-    }
-    
-    heapifyDown() {
-        const length = this.heap.length;
-        let idx = 0;
-        
-        while(this.getLeftChildIndex(idx) < length) {
-            const left = this.getLeftChildIndex(idx);
-            const right = this.getRightChildIndex(idx);
-            let smaller = left;
-            
-            if(right < length && this.heap[right][1] < this.heap[left][1]) {
-                smaller = right;
-            }
-            
-            if(this.heap[idx][1] <= this.heap[smaller][1]) break;
-            this.swap(idx, smaller);
-            idx = smaller;
-        }
-    }
-}
-
-const dijkstra = (start, graph, n) => {
-    const pq = new MinHeap();
-    pq.push([start, 0]);
-    
-    const dist = Array(n + 1).fill(Infinity);
-    dist[start] = 0;
-    
-    while(pq.size()) {
-        const [currNode, currDist] = pq.pop();
-        if(dist[currNode] < currDist) continue;
-        
-        for(const [nextNode, nextDist] of graph[currNode]) {
-            const newDist = currDist + nextDist;
-            if(newDist < dist[nextNode]) {
-                pq.push([nextNode, newDist]);
-                dist[nextNode] = newDist;
-            }
-        }
-    }
-    
-    return dist;
-}
-
+/**
+* 문제 해결 시나리오
+* 1. 어느 정점에서 찢어져서 타야 최소 비용으로 갈 수 있는지 계산하면 됨
+* 2. 위의 식을 계산하기 위해 모든 노드에서 모든 노드까지의 최소 비용을 구하는 플로이드-워셜 알고리즘 호라용
+*/
 const solution = (n, s, a, b, fares) => {
-    const graph = Array.from({ length: n + 1}, () => []);
+    const floyd = Array.from({ length: n + 1 }, () => Array(n + 1).fill(Infinity));
+    floyd.forEach((arr, i) => arr[i] = 0);
     
-    for(const [start, end, cost] of fares) {
-        graph[start].push([end, cost]);
-        graph[end].push([start, cost]);
+    for(const [s, e, value] of fares) {
+        floyd[s][e] = value;
+        floyd[e][s] = value;
     }
     
-    const dijkstraS = dijkstra(s, graph, n);
-    const dijkstraA = dijkstra(a, graph, n);
-    const dijkstraB = dijkstra(b, graph, n);
+    for(let k = 1; k <= n; k++) {
+        for(let i = 1; i <= n; i++) {
+            for(let j = 1; j <= n; j++) {
+                if(floyd[i][k] + floyd[k][j] < floyd[i][j]) {
+                    floyd[i][j] = floyd[i][k] + floyd[k][j];
+                }
+            }
+        }
+    }
     
-    let answer = Infinity;
+    let answer = Number.MAX_SAFE_INTEGER;
     
     for(let i = 1; i <= n; i++) {
-        answer = Math.min(answer, dijkstraS[i] + dijkstraA[i] + dijkstraB[i]);
+        answer = Math.min(answer, floyd[s][i] + floyd[a][i] + floyd[b][i]);
     }
     
     return answer;
