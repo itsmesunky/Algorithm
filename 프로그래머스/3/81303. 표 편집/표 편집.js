@@ -1,49 +1,120 @@
-const solution = (n, k, cmd) => {
-    // prev[i] = i의 윗 행 인덱스
-    // next[i] = i의 아랫 행 인덱스
-    const prev = Array(n).fill(0).map((_, i) => i - 1);
-    const next = Array(n).fill(0).map((_, i) => i + 1);
-    next[n - 1] = -1; // 마지막 행의 다음은 없음
+class Row {
+  constructor(index) {
+    this.index = index;
+    this.prev = null;
+    this.next = null;
+  }
+}
 
-    const deleted = []; // 삭제된 행 저장 (스택)
-    let cur = k;        // 현재 선택된 행
+class Table {
+  constructor(n, k) {
+    this.rows = [];
+    this.cursor = null;
+    this.deletedStack = [];
+    this.initTable(n, k);
+  }
 
-    for (let c of cmd) {
-        const [op, x] = c.split(" ");
-
-        if (op === "U") {
-            let cnt = Number(x);
-            while (cnt--) cur = prev[cur];
-        }
-
-        else if (op === "D") {
-            let cnt = Number(x);
-            while (cnt--) cur = next[cur];
-        }
-
-        else if (op === "C") {
-            deleted.push([cur, prev[cur], next[cur]]); // 현재 행 저장
-
-            // 현재 행 삭제 처리
-            if (prev[cur] !== -1) next[prev[cur]] = next[cur];
-            if (next[cur] !== -1) prev[next[cur]] = prev[cur];
-
-            // 다음 행 선택 (없으면 윗 행 선택)
-            cur = (next[cur] !== -1) ? next[cur] : prev[cur];
-        }
-
-        else if (op === "Z") {
-            const [idx, p, n2] = deleted.pop();
-
-            // 복구
-            if (p !== -1) next[p] = idx;
-            if (n2 !== -1) prev[n2] = idx;
-        }
+  initTable(n, k) {
+    for (let i = 0; i < n; i++) {
+      this.rows[i] = new Row(i);
     }
 
-    // 최종 문자열 생성
-    const result = Array(n).fill("O");
-    for (const [idx] of deleted) result[idx] = "X";
+    for (let i = 0; i < n; i++) {
+      if (i > 0) this.rows[i].prev = this.rows[i - 1];
+      if (i < n - 1) this.rows[i].next = this.rows[i + 1];
+    }
 
-    return result.join("");
-};
+    this.cursor = this.rows[k];
+  }
+
+  up(moveCount) {
+    for (let i = 0; i < moveCount; i++) {
+      this.cursor = this.cursor.prev;
+    }
+  }
+
+  down(moveCount) {
+    for (let i = 0; i < moveCount; i++) {
+      this.cursor = this.cursor.next;
+    }
+  }
+
+  remove() {
+    const deletedRow = this.cursor;
+
+    // 삭제할 때 prev/next 정보를 저장해두기
+    this.deletedStack.push({
+      row: deletedRow,
+      prevRow: deletedRow.prev,
+      nextRow: deletedRow.next,
+    });
+
+    // 연결 끊기
+    if (deletedRow.prev) {
+      deletedRow.prev.next = deletedRow.next;
+    }
+    if (deletedRow.next) {
+      deletedRow.next.prev = deletedRow.prev;
+    }
+
+    // 커서 이동
+    if (deletedRow.next) {
+      this.cursor = deletedRow.next;
+    } else {
+      this.cursor = deletedRow.prev;
+    }
+  }
+
+  restore() {
+    if (this.deletedStack.length === 0) return;
+
+    const { row: restoredRow, prevRow, nextRow } = this.deletedStack.pop();
+
+    // 저장된 연결 정보로 즉시 복구 (O(1))
+    restoredRow.prev = prevRow;
+    restoredRow.next = nextRow;
+
+    if (prevRow) {
+      prevRow.next = restoredRow;
+    }
+    if (nextRow) {
+      nextRow.prev = restoredRow;
+    }
+  }
+
+  getResult() {
+    const result = new Array(this.rows.length).fill('O');
+
+    for (const { row } of this.deletedStack) {
+      result[row.index] = 'X';
+    }
+
+    return result.join('');
+  }
+}
+
+function solution(n, k, cmd) {
+  const table = new Table(n, k);
+
+  for (let i = 0; i < cmd.length; i++) {
+    const [command, x] = cmd[i].split(' ');
+
+    switch (command) {
+      case 'U':
+        table.up(parseInt(x));
+        break;
+      case 'D':
+        table.down(parseInt(x));
+        break;
+      case 'C':
+        table.remove();
+        break;
+      case 'Z':
+        table.restore();
+        break;
+    }
+  }
+
+  const result = table.getResult();
+  return result;
+}
