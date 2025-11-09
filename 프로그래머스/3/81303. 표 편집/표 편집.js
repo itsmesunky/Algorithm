@@ -1,8 +1,6 @@
 const solution = (n, k, cmd) => {
-    // 행 삭제 여부
-    const isRemoved = Array(n).fill(false);
-    // 삭제 행 스택
-    const deletedStack = [];
+    const isRemoved = Array(n).fill(false); // 행 삭제 여부 저장 배열
+    const deletedStack = []; // 삭제 행 스택(LIFO)
     
     // 이중 연결 리스트
     // 각 행의 이전/다음 행 번호 저장 배열
@@ -21,11 +19,10 @@ const solution = (n, k, cmd) => {
         let parseNum = Number(num);
         
         switch(operation) {
-            case "U":
-                while(parseNum--) selectedRow = prevRow[selectedRow];
-                break;
-            case "D":
-                while(parseNum--) selectedRow = nextRow[selectedRow];
+            case "U": case "D":
+                while(parseNum--) {
+                    selectedRow = operation === "U" ? prevRow[selectedRow] : nextRow[selectedRow];
+                }
                 break;
             case "C":
                 // 이전/다음 노드 연결 끊기
@@ -37,10 +34,13 @@ const solution = (n, k, cmd) => {
                 isRemoved[selectedRow] = true;
                 deletedStack.push(selectedRow);
                 
+                // 마지막 행 선택 상황에서 "C" 입력 시 이전 행 선택
                 selectedRow = nextRow[selectedRow] !== -1 ? nextRow[selectedRow] : prevRow[selectedRow];
                 break;
             case "Z":
                 const restore = deletedStack.pop();
+                
+                // 재연결
                 if(prevRow[restore] !== -1) nextRow[prevRow[restore]] = restore;
                 if(nextRow[restore] !== -1) prevRow[nextRow[restore]] = restore;
                 isRemoved[restore] = false;
