@@ -10,9 +10,8 @@ const solution = (info, edges) => {
         if(info[node] === 0) sheep++;
         else wolf++;
         
-        maxSheepCount = Math.max(maxSheepCount, sheep);
-        
         if(sheep === wolf) return;
+        maxSheepCount = Math.max(maxSheepCount, sheep);
         
         const newNodes = new Set(nextNodes);
         newNodes.delete(node);
