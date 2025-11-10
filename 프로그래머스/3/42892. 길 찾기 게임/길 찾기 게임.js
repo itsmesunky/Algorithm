@@ -1,29 +1,37 @@
-// Node 클래스 정의
+/**
+* 문제 해결 시나리오
+* 1. nodeinfo를 바탕으로 BST 생성
+* 2. 전/후위 순회 배열 반환
+*/
+
+/**
+* Node: 하나의 노드 인스턴스를 생성하는 클래스
+* @param {number} no - 해당 인스턴스의 번호
+* @param {number} x - 해당 인스턴스의 x축
+*/
 class Node {
-    constructor(id, x, y) {
-        this.id = id;
+    constructor(no, x) {
+        this.no = no;
         this.x = x;
-        this.y = y;
         this.left = null;
         this.right = null;
     }
 }
 
-// BST에 노드를 삽입하는 함수
-// BST의 핵심 규칙:
-// 1. Y 좌표(깊이)가 더 낮은 노드는 항상 부모 노드가 됨 (문제 조건)
-// 2. X 좌표가 부모보다 작으면 왼쪽, 크면 오른쪽 자식 노드가 됨
-function insertNode(root, newNode) {
-    if (newNode.x < root.x) {
-        // 왼쪽 서브트리
-        if (root.left === null) {
+/**
+* insertNode: 트리에 노드를 삽입하는 작업(재귀)
+* @param {object} root - 루트 노드 인스턴스
+* @param {object} newNode - 트리에 새로 삽입할 노드 인스턴스
+*/
+const insertNode = (root, newNode) => {
+    if(newNode.x < root.x) { // 왼쪽 자식 트리
+        if(!root.left) {
             root.left = newNode;
         } else {
             insertNode(root.left, newNode);
         }
-    } else {
-        // 오른쪽 서브트리
-        if (root.right === null) {
+    } else { // 오른쪽 자식 트리
+        if(!root.right) {
             root.right = newNode;
         } else {
             insertNode(root.right, newNode);
@@ -31,57 +39,50 @@ function insertNode(root, newNode) {
     }
 }
 
-// 전위 순회 (Preorder Traversal: Root -> Left -> Right)
-function preorder(node, result) {
-    if (node === null) return;
+// 전위식
+const preorder = (arr, node) => {
+    arr.push(node.no);
     
-    result.push(node.id); // 1. Root 방문
-    preorder(node.left, result); // 2. Left 순회
-    preorder(node.right, result); // 3. Right 순회
-}
-
-// 후위 순회 (Postorder Traversal: Left -> Right -> Root)
-function postorder(node, result) {
-    if (node === null) return;
-    
-    postorder(node.left, result); // 1. Left 순회
-    postorder(node.right, result); // 2. Right 순회
-    result.push(node.id); // 3. Root 방문
-}
-
-function solution(nodeinfo) {
-    // 1. 노드 정보 가공 (인덱스를 ID로 추가)
-    const nodes = nodeinfo.map((info, index) => ({
-        id: index + 1, // 1번부터 N번까지의 노드 ID
-        x: info[0],
-        y: info[1],
-    }));
-
-    // 2. BST 구성을 위한 정렬 (핵심!)
-    // - Y 좌표 내림차순 (깊이가 깊은 노드가 먼저 배치)
-    // - Y가 같으면 X 좌표 오름차순 (문제 조건에 따라, Y가 같을 수 없으므로 사실상 Y만 고려)
-    nodes.sort((a, b) => {
-        if (a.y !== b.y) {
-            return b.y - a.y; // Y 내림차순 (큰 Y가 먼저 와서 루트가 됨)
-        }
-        return a.x - b.x; // X 오름차순 (Y가 같을 때의 규칙, 문제에서는 필요 없음)
-    });
-
-    // 3. BST 구성
-    let root = new Node(nodes[0].id, nodes[0].x, nodes[0].y); // 가장 Y값이 큰 노드가 루트
-    
-    for (let i = 1; i < nodes.length; i++) {
-        const newNode = new Node(nodes[i].id, nodes[i].x, nodes[i].y);
-        insertNode(root, newNode);
+    if(node.left !== null) {
+        preorder(arr, node.left);
     }
+    
+    if(node.right !== null) {
+        preorder(arr, node.right);
+    }
+}
 
-    // 4. 순회 실행
+// 후위식
+const postorder = (arr, node) => {
+    if(node.left !== null) {
+        postorder(arr, node.left);
+    }
+    
+    if(node.right !== null) {
+        postorder(arr, node.right);
+    }
+    
+    arr.push(node.no);
+}
+
+const solution = (nodeinfo) => {
     const preorderResult = [];
     const postorderResult = [];
     
-    preorder(root, preorderResult);
-    postorder(root, postorderResult);
-
-    // 5. 결과 반환
+    const copiedNodeInfo = nodeinfo.map((arr, i) => [...arr, i + 1]);
+    
+    // 트리 생성을 위해 nodeinfo y축 기준 내림차순, x축 기준 오름차순 정렬
+    copiedNodeInfo.sort((a, b) => b[1] - a[1] || a[0] - b[0]);
+    
+    const root = new Node(copiedNodeInfo[0][2], copiedNodeInfo[0][0]);
+    
+    for(let i = 1; i < copiedNodeInfo.length; i++) {
+        const newNode = new Node(copiedNodeInfo[i][2], copiedNodeInfo[i][0]);
+        insertNode(root, newNode);
+    }
+    
+    preorder(preorderResult, root);
+    postorder(postorderResult, root);
+    
     return [preorderResult, postorderResult];
 }
