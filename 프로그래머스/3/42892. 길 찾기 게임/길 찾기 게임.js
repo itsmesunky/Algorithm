@@ -1,14 +1,3 @@
-/**
-* 문제 해결 시나리오
-* 1. nodeinfo를 바탕으로 BST 생성
-* 2. 전/후위 순회 배열 반환
-*/
-
-/**
-* Node: 하나의 노드 인스턴스를 생성하는 클래스
-* @param {number} no - 해당 인스턴스의 번호
-* @param {number} x - 해당 인스턴스의 x축
-*/
 class Node {
     constructor(no, x) {
         this.no = no;
@@ -19,19 +8,19 @@ class Node {
 }
 
 /**
-* insertNode: 트리에 노드를 삽입하는 작업(재귀)
-* @param {object} root - 루트 노드 인스턴스
-* @param {object} newNode - 트리에 새로 삽입할 노드 인스턴스
+* insertNode - 이진 탐색 트리에 노드 삽입(재귀적으로 새로운 노드를 삽입)
+* @param {object} root - 삽입 시도할 부모 노드
+* @param {object} newNode - 삽입될 노드
 */
 const insertNode = (root, newNode) => {
-    if(newNode.x < root.x) { // 왼쪽 자식 트리
-        if(!root.left) {
+    if(newNode.x < root.x) { // 왼쪽 서브 트리에 삽입
+        if(root.left === null) {
             root.left = newNode;
         } else {
             insertNode(root.left, newNode);
         }
-    } else { // 오른쪽 자식 트리
-        if(!root.right) {
+    } else { // 오른쪽 서브 트리에 삽입
+        if(root.right === null) {
             root.right = newNode;
         } else {
             insertNode(root.right, newNode);
@@ -39,50 +28,50 @@ const insertNode = (root, newNode) => {
     }
 }
 
-// 전위식
+/**
+* preorder - 이진 탐색 트리를 전위 순회하며 배열에 노드를 순차적으로 저장하는 함수
+*/
 const preorder = (arr, node) => {
     arr.push(node.no);
-    
-    if(node.left !== null) {
-        preorder(arr, node.left);
-    }
-    
-    if(node.right !== null) {
-        preorder(arr, node.right);
-    }
+    if(node.left !== null) preorder(arr, node.left);
+    if(node.right !== null) preorder(arr, node.right);
 }
 
-// 후위식
+/**
+* inorder - 이진 탐색 트리를 중위 순회하며 배열에 노드를 순차적으로 저장하는 함수
+*/
+const inorder = (arr, node) => {
+    if(node.left !== null) inorder(arr, node.left);
+    arr.push(node.no);
+    if(node.right !== null) inorder(arr, node.right);
+}
+
+/**
+* postorder - 이진 탐색 트리를 후위 순회하며 배열에 노드를 순차적으로 저장하는 함수
+*/
 const postorder = (arr, node) => {
-    if(node.left !== null) {
-        postorder(arr, node.left);
-    }
-    
-    if(node.right !== null) {
-        postorder(arr, node.right);
-    }
-    
+    if(node.left !== null) postorder(arr, node.left);
+    if(node.right !== null) postorder(arr, node.right);
     arr.push(node.no);
 }
 
+
 const solution = (nodeinfo) => {
-    const preorderResult = [];
-    const postorderResult = [];
+    const nodes = nodeinfo.map((arr, i) => [i + 1, ...arr]);
+    nodes.sort((a, b) => b[2] - a[2] || a[1] - b[1]);
     
-    const copiedNodeInfo = nodeinfo.map((arr, i) => [...arr, i + 1]);
+    const root = new Node(nodes[0][0], nodes[0][1]);
     
-    // 트리 생성을 위해 nodeinfo y축 기준 내림차순, x축 기준 오름차순 정렬
-    copiedNodeInfo.sort((a, b) => b[1] - a[1] || a[0] - b[0]);
-    
-    const root = new Node(copiedNodeInfo[0][2], copiedNodeInfo[0][0]);
-    
-    for(let i = 1; i < copiedNodeInfo.length; i++) {
-        const newNode = new Node(copiedNodeInfo[i][2], copiedNodeInfo[i][0]);
+    for(let i = 1; i < nodes.length; i++) {
+        const newNode = new Node(nodes[i][0], nodes[i][1]);
         insertNode(root, newNode);
     }
     
-    preorder(preorderResult, root);
-    postorder(postorderResult, root);
+    const preorderResults = [];
+    const postorderResults = [];
     
-    return [preorderResult, postorderResult];
+    preorder(preorderResults, root);
+    postorder(postorderResults, root);
+    
+    return [preorderResults, postorderResults];
 }
