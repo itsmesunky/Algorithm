@@ -1,15 +1,15 @@
 /**
 * getManhattanDist - 두 좌표 간 맨해튼 거리를 반환하는 함수
-* @param {number} ax - A의 x 좌표
-* @param {number} bx - B의 x 좌표
-* @param {number} ay - A의 y 좌표
-* @param {number} by - B의 y 좌표
+* @param {number} r1 - A의 y 좌표
+* @param {number} r2 - B의 y 좌표
+* @param {number} c1 - A의 x 좌표
+* @param {number} c2 - B의 x 좌표
 * @returns {number} - 두 좌표 간 맨해튼 거리
 */
-const getManhattanDist = (ax, bx, ay, by) => Math.abs(bx - ax) + Math.abs(by - ay);
+const getManhattanDist = (r1, r2, c1, c2) => Math.abs(r2 - r1) + Math.abs(c2 - c1);
 
 const solution = (n, m, x, y, r, c, k) => {
-    const manhattanDist = getManhattanDist(y, c, x, r);
+    const manhattanDist = getManhattanDist(x, r, y, c);
     
     // 조기 종료
     // k에서 맨해튼 거리를 제외한 값이 짝수가 아니라면 불가(패리티 검사)
@@ -37,7 +37,7 @@ const solution = (n, m, x, y, r, c, k) => {
             if(nr < 1 || nc < 1 || nr > n || nc > m) continue;
             
             const remaining = k - move;
-            const currManhattanDist = getManhattanDist(nc, c, nr, r);
+            const currManhattanDist = getManhattanDist(nr, r, nc, c);
             if(remaining < currManhattanDist) continue;
             if((remaining - currManhattanDist) % 2 !== 0) continue;
             
