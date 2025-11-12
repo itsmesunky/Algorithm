@@ -27,32 +27,34 @@ const solution = (play_time, adv_time, logs) => {
     const numPlayTime = convertToSec(play_time);
     const numAdvTime = convertToSec(adv_time);
     
-    const length = numPlayTime + 1;
-    const times = Array(length).fill(0);
+    const times = Array(numPlayTime + 1).fill(0);
     
-    const numLogs = logs.map(log => log.split("-").map(convertToSec));
-    
-    for(const [start, end] of numLogs) {
+    for(const log of logs) {
+        const [start, end] = log.split("-").map(convertToSec);
+        
         // 이모스 알고리즘 적용
         times[start]++;
-        if(end < length) times[end]--;
+        times[end]--;
     }
     
     // 이모스 배열 정리
-    for(let i = 1; i < length; i++) {
+    for(let i = 1; i < numPlayTime; i++) {
         times[i] += times[i - 1];
     }
     
     // prefix sum
-    for(let i = 1; i < length; i++) {
+    for(let i = 1; i < numPlayTime; i++) {
         times[i] += times[i - 1];
     }
     
     let maxPlays = times[numAdvTime - 1];
 
     for(let right = numAdvTime; right <= numPlayTime; right++) {
-        // 광고 구간 구간합(투 포인터)
-        const sum = times[right] - times[right - numAdvTime];
+        // 광고 시작 시간
+        const start = right - numAdvTime;
+        
+        // 광고 구간 재생합(투 포인터)              
+        const sum = times[right] - times[start];
         if(maxPlays < sum) {
             maxPlays = sum;
             answer = right - numAdvTime + 1;
