@@ -38,16 +38,16 @@ const solution = (play_time, adv_time, logs) => {
     }
     
     // 이모스 배열 정리
-    for(let i = 1; i < numPlayTime; i++) {
+    for(let i = 1; i <= numPlayTime; i++) {
         times[i] += times[i - 1];
     }
     
     // prefix sum
-    for(let i = 1; i < numPlayTime; i++) {
+    for(let i = 1; i <= numPlayTime; i++) {
         times[i] += times[i - 1];
     }
     
-    let maxPlays = times[numAdvTime - 1];
+    let maxPlays = times[numAdvTime];
 
     for(let right = numAdvTime; right <= numPlayTime; right++) {
         // 광고 시작 시간
@@ -57,7 +57,7 @@ const solution = (play_time, adv_time, logs) => {
         const sum = times[right] - times[start];
         if(maxPlays < sum) {
             maxPlays = sum;
-            answer = right - numAdvTime + 1;
+            answer = start + 1;
         }
     }
     
