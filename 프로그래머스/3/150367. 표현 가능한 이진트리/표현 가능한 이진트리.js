@@ -19,6 +19,7 @@ const solution = (numbers) => {
     /**
     * isValid: 현재 2진수로 포화 이진트리 생성 가능 여부 판별 함수
     * @param {string} bin - 2진수
+    * @returns {boolean} - 생성 가능 여부
     */
     const isValid = (string) => {
         const len = string.length;
@@ -29,10 +30,9 @@ const solution = (numbers) => {
         const right = string.slice(parent + 1);
         
         if(string[parent] === '0') { // 루트 노드가 0일 때
-            if(left.includes('1') || right.includes('1')) { // 서브 노드에 '1'이 있는 경우
-                return false;
-            }
-            return true;
+            // 서브 노드에 '1'이 있는 경우
+            if(left.includes('1') || right.includes('1')) return false;
+            return isValid(left) && isValid(right);
         }
         
         return isValid(left) && isValid(right);
