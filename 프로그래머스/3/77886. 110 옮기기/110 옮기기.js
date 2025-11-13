@@ -28,7 +28,7 @@ const solution = (s) => {
         } else {
             const prev = result.slice(0, lastZeroIndex + 1);
             const after = result.slice(lastZeroIndex + 1);
-            result = prev + '110'.repeat(count) + after;
+            result = prev + composite + after;
         }
 
         return result;
