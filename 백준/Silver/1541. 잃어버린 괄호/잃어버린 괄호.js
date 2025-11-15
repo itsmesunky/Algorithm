@@ -1,27 +1,10 @@
 const input = require('fs').readFileSync('/dev/stdin').toString().trim();
 
-const expression = input
-  .replace(/[^\d]/g, (matcher) => (matcher === '-' ? ' - ' : ' + '))
-  .split(' ')
-  .map((value, idx) => (idx % 2 ? value : +value));
+const groups = input.split('-').map(g => g.split('+').reduce((a,b)=>a+Number(b),0));
 
-const stack = [];
-
-for (const value of expression) {
-  if (stack.length && Number.isInteger(value) && stack.at(-1) === '+') {
-    stack.pop();
-    stack.push(value + stack.pop());
-  } else {
-    stack.push(value);
-  }
+let answer = groups[0];
+for (let i = 1; i < groups.length; i++) {
+  answer -= groups[i];
 }
 
-if (stack.length === 1) {
-  console.log(stack.pop());
-} else {
-  let express = '';
-  for (const value of stack) {
-    express += value;
-  }
-  console.log(eval(express));
-}
+console.log(answer);
