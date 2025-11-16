@@ -14,8 +14,6 @@ const dirs = [
   [0, 1],
 ];
 
-const answer = [];
-
 let inputRow = 1;
 
 const BFS = (row, col, visited, board, R, C) => {
@@ -69,9 +67,7 @@ for (let i = 0; i < TC; i++) {
       }
     }
   }
-
-  answer.push(count);
+    
+  console.log(count);
   inputRow += K;
 }
-
-for (const num of answer) console.log(num);
