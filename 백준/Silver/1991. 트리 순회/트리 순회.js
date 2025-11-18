@@ -4,97 +4,52 @@ const input = require("fs")
   .trim()
   .split("\n");
 
-// 노드 클래스
-class Node {
-  constructor(value) {
-    this.value = value;
-    this.left = null;
-    this.right = null;
-  }
-}
-
-// 이진 트리 노드의 갯수
-const N = parseInt(input[0]);
-
+// 입력값
+const N = parseInt(input[0]); // 노드의 갯수
 const infos = input
   .slice(1)
-  .map((str) => str.split(" ").map((str) => str.replaceAll("\r", "")));
+  .map((str) => str.split(" ").map((char) => char.replace("\r", "")));
 
-const [parent, left, right] = infos[0];
-const root = new Node(parent);
-root.left = new Node(left);
-root.right = new Node(right);
+const tree = new Map();
 
-// 노드 삽입
-const insertNode = (parent, node) => {
-  if (parent.left) {
-    if (parent.left.value === node.value) {
-      parent.left = node;
-      return;
-    } else {
-      insertNode(parent.left, node);
-    }
-  }
-
-  if (parent.right) {
-    if (parent.right.value === node.value) {
-      parent.right = node;
-      return;
-    } else {
-      insertNode(parent.right, node);
-    }
-  }
-};
-
-for (let i = 1; i < N; i++) {
+for (let i = 0; i < infos.length; i++) {
   const [parent, left, right] = infos[i];
-  const newNode = new Node(parent);
-  newNode.left = new Node(left);
-  newNode.right = new Node(right);
-  insertNode(root, newNode);
+  if (!tree.has(parent)) tree.set(parent);
+  tree.set(parent, { left, right });
 }
 
-// 전위 순회
-const preorderResults = [];
+let preorderResult = "";
 const preorder = (node) => {
-  preorderResults.push(node.value);
-  if (node.left && node.left.value !== ".") {
-    preorder(node.left);
-  }
+  preorderResult += node;
 
-  if (node.right && node.right.value !== ".") {
-    preorder(node.right);
-  }
+  const left = tree.get(node).left;
+  const right = tree.get(node).right;
+
+  if (left && left !== ".") preorder(left);
+  if (right && right !== ".") preorder(right);
 };
 
-// 중위 순회
-const inorderResults = [];
+let inorderResult = "";
 const inorder = (node) => {
-  if (node.left && node.left.value !== ".") {
-    inorder(node.left);
-  }
-  inorderResults.push(node.value);
-  if (node.right && node.right.value !== ".") {
-    inorder(node.right);
-  }
+  const left = tree.get(node).left;
+  const right = tree.get(node).right;
+
+  if (left && left !== ".") inorder(left);
+  inorderResult += node;
+  if (right && right !== ".") inorder(right);
 };
 
-// 후위 순회
-const postorderResults = [];
+let postorderResult = "";
 const postorder = (node) => {
-  if (node.left && node.left.value !== ".") {
-    postorder(node.left);
-  }
-  if (node.right && node.right.value !== ".") {
-    postorder(node.right);
-  }
-  postorderResults.push(node.value);
+  const left = tree.get(node).left;
+  const right = tree.get(node).right;
+
+  if (left && left !== ".") postorder(left);
+  if (right && right !== ".") postorder(right);
+  postorderResult += node;
 };
 
-preorder(root);
-inorder(root);
-postorder(root);
-
-console.log(preorderResults.join(""));
-console.log(inorderResults.join(""));
-console.log(postorderResults.join(""));
+preorder("A");
+inorder("A");
+postorder("A");
+console.log(`${preorderResult}\n${inorderResult}\n${postorderResult}`);
