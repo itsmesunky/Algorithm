@@ -4,23 +4,20 @@ const input = require("fs")
   .trim()
   .split("\n");
 
+// 입력값
 const A = input[0].trim();
 const B = input[1].trim();
 
-const n = A.length;
-const m = B.length;
+const row = A.length;
+const col = B.length;
 
-// DP 테이블 초기화
-const dp = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
+const dp = Array.from({ length: row + 1 }, () => Array(col + 1).fill(0));
 
-for (let i = 1; i <= n; i++) {
-  for (let j = 1; j <= m; j++) {
-    if (A[i - 1] === B[j - 1]) {
-      dp[i][j] = dp[i - 1][j - 1] + 1; // 문자가 같으면 왼쪽 대각선 + 1
-    } else {
-      dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]); // 다르면 위/왼쪽 중 큰 값
-    }
+for (let i = 1; i <= row; i++) {
+  for (let j = 1; j <= col; j++) {
+    if (A[i - 1] === B[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+    else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
   }
 }
 
-console.log(dp[n][m]);
+console.log(dp[row][col]);
