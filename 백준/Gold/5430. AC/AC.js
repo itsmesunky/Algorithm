@@ -25,8 +25,6 @@ for (let i = 0; i < TC; i++) {
   let [commands, n, arr] = infos[i];
   n = parseInt(n);
 
-  const result = [];
-
   let flag = true;
   let isReverse = false;
 
@@ -53,8 +51,6 @@ for (let i = 0; i < TC; i++) {
   if (!flag) continue;
 
   const sliced = arr.slice(lt, rt + 1);
-  if (isReverse) result.push(sliced.reverse());
-  else result.push(sliced);
-
-  console.log("[" + result.join(",") + "]");
+  if (isReverse) sliced.reverse();
+  console.log("[" + sliced.join(",") + "]");
 }
