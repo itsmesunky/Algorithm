@@ -12,8 +12,11 @@ const infos = [];
 for (let i = 0; i < input.length; i += 3) {
   infos.push(
     input.slice(i, i + 3).map((str, j) => {
-      if (j < 2) return str.replaceAll("\r", "");
-      else return JSON.parse(str);
+      if (j < 2) {
+        return str.replaceAll("\r", "");
+      } else {
+        return JSON.parse(str);
+      }
     })
   );
 }
@@ -33,13 +36,14 @@ for (let i = 0; i < TC; i++) {
 
   for (const command of commands) {
     if (command === "D") {
-      if (isReverse) rt--;
-      else lt++;
-
-      if (lt > rt + 1) {
+      if (rt < lt) {
+        // 배열이 빈 상태
         console.log("error");
         flag = false;
         break;
+      } else {
+        if (isReverse) rt--;
+        else lt++;
       }
     } else {
       isReverse = !isReverse;
@@ -47,11 +51,10 @@ for (let i = 0; i < TC; i++) {
   }
 
   if (!flag) continue;
-  if (isReverse) {
-    while (lt <= rt) result.push(arr[rt--]);
-  } else {
-    while (lt <= rt) result.push(arr[lt++]);
-  }
+
+  const sliced = arr.slice(lt, rt + 1);
+  if (isReverse) result.push(sliced.reverse());
+  else result.push(sliced);
 
   console.log("[" + result.join(",") + "]");
 }
