@@ -20,6 +20,16 @@ const dirs = [
   [0, -1],
 ];
 
+const isWall = (nextRow, nextCol) => {
+  return (
+    nextRow <= 0 ||
+    N - 1 <= nextRow ||
+    nextCol <= 0 ||
+    M - 1 <= nextCol ||
+    board[currRow][currCol] === 1
+  );
+};
+
 let cleaningCount = 0;
 while (true) {
   // 현재 칸이 아직 청소되지 않은 경우, 현재 칸을 청소한다.
@@ -33,9 +43,7 @@ while (true) {
     const nextRow = currRow + dirs[i][0];
     const nextCol = currCol + dirs[i][1];
 
-    // 테두리 확인
-    if (nextRow <= 0 || N - 1 <= nextRow || nextCol <= 0 || M - 1 <= nextCol)
-      continue;
+    if (isWall(nextRow, nextCol)) continue;
 
     // 청소되지 않은 칸인지 확인
     if (board[nextRow][nextCol] === 0) {
@@ -54,9 +62,7 @@ while (true) {
       const nextRow = currRow + dirs[currDir][0];
       const nextCol = currCol + dirs[currDir][1];
 
-      // 테두리 확인
-      if (nextRow <= 0 || N - 1 <= nextRow || nextCol <= 0 || M - 1 <= nextCol)
-        continue;
+      if (isWall(nextRow, nextCol)) continue;
 
       if (board[nextRow][nextCol] === 0) {
         currRow = nextRow;
@@ -66,11 +72,14 @@ while (true) {
     }
   } else {
     // 후진 위치
-    currRow += dirs[(currDir + 2) % 4][0];
-    currCol += dirs[(currDir + 2) % 4][1];
+    const nextRow = currRow + dirs[(currDir + 2) % 4][0];
+    const nextCol = currCol + dirs[(currDir + 2) % 4][1];
 
     // 후진한 곳의 위치가 벽이라면 작동 중지
-    if (board[currRow][currCol] === 1) break;
+    if (isWall(nextRow, nextCol)) break;
+
+    currRow = nextRow;
+    currCol = nextCol;
   }
 }
 
