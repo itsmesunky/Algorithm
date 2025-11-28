@@ -10,11 +10,11 @@ const chars = input[1].split(" ").sort();
 
 /**
  * 길이 L의 문자열이 최소 한 개의 모음, 최소 두 개의 자음으로 이루어졌는지를 판단하는 헬퍼 함수
- * @param {string} arr- 길이 L의 문자열
+ * @param {string} str - 길이 L의 문자열
  * @returns {boolean}
  */
 const isValid = (str) => {
-  const vowel = str.match(/(a)|(e)|(i)|(o)|(u)+/g)?.length ?? 0;
+  const vowel = str.match(/[aeiou]/g)?.length ?? 0;
   return 1 <= vowel && 2 <= str.length - vowel;
 };
 
