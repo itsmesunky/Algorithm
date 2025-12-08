@@ -39,10 +39,13 @@ for (let i = 1; i < numbers.length; i++) {
   insertNode(root, newNode);
 }
 
+const postorderResults = [];
+
 function postorder(node) {
   if (node.left) postorder(node.left);
   if (node.right) postorder(node.right);
-  console.log(node.x);
+  postorderResults.push(node.x);
 }
 
 postorder(root);
+console.log(postorderResults.join("\n"));
