@@ -34,8 +34,4 @@ function DFS(arr) {
 }
 
 DFS([]);
-
-const result = [...set];
-for (const str of result) {
-  console.log(...str.split(" ").map(Number));
-}
+console.log([...set].join("\n"));
