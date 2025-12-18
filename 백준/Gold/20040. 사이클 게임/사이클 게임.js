@@ -8,7 +8,7 @@ const parent = Array.from({ length: n }, (_, i) => i);
 
 function getParent(x) {
   if (parent[x] === x) return x;
-  else return getParent(parent[x]);
+  return parent[x] = getParent(parent[x]);
 }
 
 function unionFind(x, y) {
