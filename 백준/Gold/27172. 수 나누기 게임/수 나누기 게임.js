@@ -1,15 +1,10 @@
 const fs = require("fs");
 const input = fs.readFileSync("dev/stdin").toString().trim().split("\n");
 
-const N = parseInt(input.shift());
-
-const infos = input[0].split(" ").map(Number);
-const numbers = [...infos].sort((a, b) => a - b);
-
-const MAX_NUMBER = numbers.at(-1);
+const numbers = input[1].split(" ").map(Number);
+const MAX_NUMBER = Math.max(...numbers);
 
 const set = new Set(numbers);
-
 const result = Array(MAX_NUMBER + 1).fill(0);
 for (const number of numbers) {
   for (let j = number * 2; j <= MAX_NUMBER; j += number) {
@@ -21,7 +16,7 @@ for (const number of numbers) {
 }
 
 const answer = [];
-for (const number of infos) {
+for (const number of numbers) {
   answer.push(result[number]);
 }
 
