@@ -46,11 +46,9 @@ const spreadVirus = (array) => {
 
       if (N <= nextRow || nextRow < 0 || N <= nextCol || nextCol < 0) continue;
 
-      if (
-        copiedBoard[nextRow][nextCol] === 0 ||
-        copiedBoard[nextRow][nextCol] === 2
-      ) {
-        if (copiedBoard[nextRow][nextCol] === 0) totalTimes = currTimes + 1;
+      const nextNodeStat = copiedBoard[nextRow][nextCol];
+      if ([0, 2].includes(nextNodeStat)) {
+        if (nextNodeStat === 0) totalTimes = currTimes + 1;
         copiedBoard[nextRow][nextCol] = -1;
         queue.push([nextRow, nextCol, currTimes + 1]);
       }
