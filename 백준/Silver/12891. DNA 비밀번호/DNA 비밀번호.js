@@ -2,7 +2,7 @@ const fs = require("fs");
 const input = fs.readFileSync("/dev/stdin").toString().trim().split(/\r?\n/);
 
 const [S, P] = input[0].split(" ").map(Number);
-const originStr = input[1];
+const dnaString = input[1];
 
 const originMap = {
   A: 0,
@@ -20,8 +20,7 @@ const newMap = new Map([
   ["G", 0],
   ["T", 0],
 ]);
-const slicedStr = originStr.slice(0, P);
-for (const char of slicedStr) {
+for (const char of dnaString.slice(0, P)) {
   newMap.set(char, newMap.get(char) + 1);
 }
 
@@ -39,10 +38,8 @@ const isValid = () => {
 
 if (isValid()) answer++;
 while (rt < S - 1) {
-  newMap.set(originStr[lt], newMap.get(originStr[lt]) - 1);
-  lt++;
-  rt++;
-  newMap.set(originStr[rt], newMap.get(originStr[rt]) + 1);
+  newMap.set(dnaString[lt], newMap.get(dnaString[lt++]) - 1);
+  newMap.set(dnaString[++rt], newMap.get(dnaString[rt]) + 1);
   if (isValid()) answer++;
 }
 
