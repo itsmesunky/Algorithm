@@ -1,65 +1,71 @@
-const doSeparate = (str) => {
-    const [lang, position, carrer, food, score] = str.split(' ');
-    return [`${lang} ${position} ${carrer} ${food}`, +score];
-}
-
-const binarySearch = (arr, num) => {
-    let lt = 0;
-    let rt = arr.length;
+const solution = (info, queries) => {
+    const combineScoreMap = new Map();
     
-    while(lt < rt) {
-        const mid = Math.floor((lt + rt) / 2);
-        const value = arr[mid];
-        if(value >= num) {
-            rt = mid;
-        } else {
-            lt = mid + 1;
-        }
+    const seperateString = (str) => {
+        const strArr = str.replaceAll("and ", "").split(" ");
+        const score = Number(strArr.pop());
+        return [strArr, score];
     }
     
-    return lt;
-}
-
-const solution = (infos, queries) => {
-    // key: 선택 항목 조합, value: [점수] 형태의 Map
-    const map = new Map();
+    const binarySearch = (arr, number) => {
+        // lower-bound
+        let lt = 0;
+        let rt = arr.length;
+        
+        while(lt < rt) {
+            const mid = Math.floor((lt + rt) / 2);
+            
+            if(arr[mid] < number) {
+                lt = mid + 1;
+            } else if(number <= arr[mid]) {
+                rt = mid;
+            }
+        }
+        
+        return lt;
+    }
     
-    const doCombineAndSet = (arr, score) => {
-        // 비트 마스크를 활용한 조합 생성
+    const setCombineScore = (str) => {
+        const [strArr, score] = seperateString(str);
+        
         for(let i = 0; i < 1 << 4; i++) {
             const combine = [];
             for(let j = 0; j < 4; j++) {
-                if(i & (1 << j)) {
-                    combine.push(arr[j]);
-                } else {
-                    combine.push('-');
-                }
+                if(i & 1 << j) combine[j] = strArr[j];
+                else combine[j] = "-";
             }
             
-            const key = combine.join(' ');
-            
-            if(map.get(key)) {
-                map.get(key).push(score);
-            } else {
-                map.set(key, [score]);
+            const key = combine.join(" ");
+            if(!combineScoreMap.has(key)) {
+                combineScoreMap.set(key, []);
             }
+            
+            combineScoreMap.get(key).push(score);
         }
     }
     
-    for(const info of infos) {
-        const [str, score] = doSeparate(info);
-        doCombineAndSet(str.split(' '), score);
+    for(const str of info) {
+        setCombineScore(str);
     }
     
-    // 이분 탐색을 위한 각 조합별 점수 오름차순 정렬
-    for(const [key, value] of map) {
-        value.sort((a, b) => a - b);
+    for(const [key, scores] of combineScoreMap) {
+        scores.sort((a, b) => a - b);
     }
     
-    return queries.map(query => {
-        const [str, score] = doSeparate(query.replaceAll(' and ', ' '));
-        const scores = map.get(str);
+    const result = [];
+    for(const query of queries) {
+        const [strArr, score] = seperateString(query);
+        const key = strArr.join(" ");
         
-        return !scores ? 0 : scores.length - binarySearch(scores, score);
-    })
+        const arr = combineScoreMap.get(key);
+        
+        if(arr) {
+            const length = arr.length;
+            result.push(length - binarySearch(arr, score))
+        } else {
+            result.push(0);
+        }
+    }
+    
+    return result;
 }
