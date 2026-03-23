@@ -2,60 +2,29 @@ const fs = require("fs");
 const input = fs.readFileSync("/dev/stdin").toString().trim().split("\n");
 
 const [N, M] = input[0].split(" ").map(Number);
-const trees = input[1]
-  .split(" ")
-  .map(Number)
-  .sort((a, b) => a - b);
+const trees = input[1].split(" ").map(Number);
 
-const getMinPos = (mid) => {
-  let lt = 0;
-  let rt = N - 1;
-  let minPos = Infinity;
-
-  while (lt <= rt) {
-    const pointer = Math.floor((lt + rt) / 2);
-
-    if (trees[pointer] < mid) {
-      lt = pointer + 1;
-      // lower-bound
-    } else if (mid < trees[pointer]) {
-      minPos = pointer;
-      rt = pointer - 1;
-    } else {
-      minPos = pointer;
-      break;
-    }
-  }
-
-  return minPos;
-};
-
-const getTrees = (start, height) => {
+const getWoodAmount = (height) => {
   let sum = 0;
-  for (let i = start; i < N; i++) {
-    sum += trees[i] - height;
+  for (const tree of trees) {
+    if (tree > height) sum += tree - height;
   }
-
   return sum;
 };
 
-let lt = 1;
-let rt = 2_000_000_000;
+let lt = 0;
+let rt = Math.max(...trees);
 let answer = 0;
 
 while (lt <= rt) {
-  const currentHeight = Math.floor((lt + rt) / 2);
-  const sum = getTrees(getMinPos(currentHeight), currentHeight);
+  const mid = Math.floor((lt + rt) / 2);
+  const wood = getWoodAmount(mid);
 
-  if (sum < M) {
-    rt = currentHeight - 1;
-  } else if (M < sum) {
-    // upper-bound
-    lt = currentHeight + 1;
-    answer = currentHeight;
+  if (wood >= M) {
+    answer = mid; // 조건 만족 → 정답 후보로 저장하고 높이를 더 올려봄
+    lt = mid + 1;
   } else {
-    answer = currentHeight;
-    break;
+    rt = mid - 1; // 목재가 부족 → 높이를 낮춰야 함
   }
 }
 
