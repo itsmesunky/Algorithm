@@ -20,7 +20,8 @@ const solution = (signals) => {
     
     for(let i = 1; i < imos.length; i++) {
         imos[i] += imos[i - 1];
+        if(imos[i] === n) return i;
     }
     
-    return imos.indexOf(n);
+    return -1;
 }
