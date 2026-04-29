@@ -1,50 +1,55 @@
 /**
-* getManhattanDist - 두 좌표 간 맨해튼 거리를 반환하는 함수
-* @param {number} r1 - A의 y 좌표
-* @param {number} r2 - B의 y 좌표
-* @param {number} c1 - A의 x 좌표
-* @param {number} c2 - B의 x 좌표
-* @returns {number} - 두 좌표 간 맨해튼 거리
+* getManhattanDist - 두 지점 간 맨해튼거리(수평/수직)를 반환하는 함수
+* @param {number} x - 좌표1의 행
+* @param {number} y - 좌표2의 행
+* @param {number} r - 좌표1의 열
+* @param {number} c - 좌표2의 열
 */
-const getManhattanDist = (r1, r2, c1, c2) => Math.abs(r2 - r1) + Math.abs(c2 - c1);
+const getManhattanDist = (x, y, r, c) => {
+    return Math.abs(x - r) + Math.abs(y - c);
+}
 
 const solution = (n, m, x, y, r, c, k) => {
-    const manhattanDist = getManhattanDist(x, r, y, c);
+    const manhattanDist = getManhattanDist(x, y, r, c);
     
     // 조기 종료
-    // k에서 맨해튼 거리를 제외한 값이 짝수가 아니라면 불가(패리티 검사)
-    if(k < manhattanDist || (k - manhattanDist) % 2 === 1) return "impossible";
+    // 1) 두 지점간 맨해튼 거리가 k 초과인 경우 도달할 수 없다.
+    // 2) k에서 맨해튼 거리를 뺀 값이 홀수인 경우 도달할 수 없다.
+    if(k < manhattanDist || (k - manhattanDist) % 2) return "impossible";
     
-    let answer = '';
-    
-    // 방향 정의
-    // 애초에 방향 정의를 오름차순으로 작성
     const dirs = [
         ['d', 1, 0],
         ['l', 0, -1],
         ['r', 0, 1],
-        ['u', -1, 0],
+        ['u', -1, 0]
     ];
     
-    // 현재 위치 행/열
-    let currR = x, currC = y;
+let answer = '';
+    let cx = x; // 현재 x 좌표 (행)
+    let cy = y; // 현재 y 좌표 (열)
     
-    for(let move = 1; move <= k; move++){
-        for(const [command, dr, dc] of dirs) {
-            const nr = currR + dr;
-            const nc = currC + dc;
+    // BFS 대신 1부터 k까지 한 걸음씩 걷는 Greedy 방식 적용
+    for(let step = 1; step <= k; step++) {
+        for(let i = 0; i < 4; i++) {
+            const nx = cx + dirs[i][1];
+            const ny = cy + dirs[i][2];
             
-            if(nr < 1 || nc < 1 || nr > n || nc > m) continue;
+            // 격자 범위 밖이면 패스
+            if(nx === 0 || ny === 0 || n < nx || m < ny) continue;
             
-            const remaining = k - move;
-            const currManhattanDist = getManhattanDist(nr, r, nc, c);
-            if(remaining < currManhattanDist) continue;
-            if((remaining - currManhattanDist) % 2 !== 0) continue;
+            const remainingSteps = k - step; // 앞으로 남은 이동 횟수
+            const distToTarget = getManhattanDist(nx, ny, r, c); // 다음 칸에서 목표까지 거리
             
-            currR = nr;
-            currC = nc;
-            answer += command;
-            break;
+            // 가지치기 1: 남은 횟수로 목표지점까지 갈 수 없는 경우
+            if(remainingSteps < distToTarget) continue;
+            // 가지치기 2: 남은 횟수와 거리의 차이가 홀수면 정확히 도착할 수 없음 (패리티 검사)
+            if((remainingSteps - distToTarget) % 2 !== 0) continue;
+            
+            // 조건을 만족하는 가장 빠른 사전순 방향을 찾았으므로 이동 확정
+            cx = nx;
+            cy = ny;
+            answer += dirs[i][0];
+            break; // 현재 step을 확정했으므로 다음 step으로 넘어감
         }
     }
     
